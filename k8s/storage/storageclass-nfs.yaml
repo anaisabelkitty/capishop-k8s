@@ -1,0 +1,24 @@
+# StorageClass para aprovisionamiento dinámico de volúmenes con NFS
+# Cuando un pod solicita almacenamiento mediante un PVC,
+# el NFS CSI Driver crea automáticamente el directorio en el servidor NFS
+# y el PV correspondiente sin intervención manual
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: nfs.csi.k8s.io
+parameters:
+  # IP del servidor NFS — en este proyecto está en el master
+  server: 192.168.224.135
+  # Directorio raíz que se exporta desde el servidor NFS
+  share: /srv/nfs/capishop
+  # Cada PVC genera su propio subdirectorio dentro del NFS
+  subDir: ${pvc.metadata.namespace}/${pvc.metadata.name}
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - nfsvers=4.1
+  - hard
+  - intr
