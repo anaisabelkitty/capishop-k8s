@@ -1,8 +1,8 @@
 ## Estado del proyecto — 01-06-2026
 
-Fase actual: Fase 3 completada — Cluster Kubernetes
-Último paso completado: cluster funcionando con 1 master y 2 workers, los tres en estado Ready
-Próximo paso: Fase 4 — Storage NFS
+Fase actual: Fase 4 completada — Storage NFS
+Último paso completado: servidor NFS configurado en el master, CSI Driver instalado, StorageClass nfs-csi activa y verificada
+Próximo paso: Fase 5 — Aplicación: frontend + backend + base de datos
 
 Entorno:
 - Alumna: Ana Isabel Díaz Bautista
@@ -26,7 +26,7 @@ Fases del proyecto:
 - Fase 1 — Repositorio GitHub ✅
 - Fase 2 — Creación de VMs ✅
 - Fase 3 — Cluster Kubernetes (kubeadm + Flannel) ✅
-- Fase 4 — Storage: NFS + PV + PVC + StorageClass
+- Fase 4 — Storage: NFS + PV + PVC + StorageClass ✅
 - Fase 5 — Aplicación: frontend + backend + base de datos
 - Fase 6 — Monitoreo: Prometheus + Grafana
 - Fase 7 — Logs: Loki + Grafana
