@@ -1,8 +1,8 @@
-## Estado del proyecto — 31-05-2026
+## Estado del proyecto — 01-06-2026
 
-Fase actual: 1 — Repositorio GitHub
-Último paso completado: repo creado en GitHub, rama develop activa, VS Code configurado
-Próximo paso: Fase 2 — creación de VMs en VMware Workstation
+Fase actual: Fase 3 completada — Cluster Kubernetes
+Último paso completado: cluster funcionando con 1 master y 2 workers, los tres en estado Ready
+Próximo paso: Fase 4 — Storage NFS
 
 Entorno:
 - Alumna: Ana Isabel Díaz Bautista
@@ -12,15 +12,20 @@ Entorno:
 - Nodos: 1 master + 2 workers
 - Herramienta de instalación del cluster: kubeadm
 - Red de pods: Flannel CNI
-- Servidor NFS: va montado en el master, IP se define en Fase 2
+- Servidor NFS: montado en el master — IP 192.168.224.135
 - Backend: Node.js
 - Informe técnico: Google Docs, se adjunta al repo al final
 - Manual de funcionamiento: Google Docs, se hace al final cuando todo esté desplegado
 
+IPs del cluster:
+- capishop-master01: 192.168.224.135
+- capishop-worker01: 192.168.224.136
+- capishop-worker02: 192.168.224.137
+
 Fases del proyecto:
 - Fase 1 — Repositorio GitHub ✅
-- Fase 2 — Creación de VMs en VMware Workstation
-- Fase 3 — Cluster Kubernetes (kubeadm + Flannel)
+- Fase 2 — Creación de VMs ✅
+- Fase 3 — Cluster Kubernetes (kubeadm + Flannel) ✅
 - Fase 4 — Storage: NFS + PV + PVC + StorageClass
 - Fase 5 — Aplicación: frontend + backend + base de datos
 - Fase 6 — Monitoreo: Prometheus + Grafana
@@ -41,5 +46,5 @@ Requisitos del proyecto (del instructor):
 
 Notas:
 - El proyecto se trabaja desde casa, no hay servidor NFS externo
-- La red del cluster cambia entre casa y el laboratorio de clase, se resuelve en Fase 2
+- La red del cluster cambia entre casa y laboratorio, las IPs pueden cambiar
 - Windsurf se usa más adelante, se indica en qué fase
