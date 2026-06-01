@@ -185,7 +185,7 @@
         remote_src: yes
 
     - name: Verificar si Flannel ya está instalado
-      shell: kubectl get pods -n kube-system | grep flannel | grep Running | wc -l
+      shell: kubectl get pods -n kube-flannel | grep flannel | grep Running | wc -l
       register: flannel_check
       changed_when: false
       failed_when: false
@@ -197,7 +197,7 @@
     - name: Esperar a que Flannel esté listo
       shell: |
         for i in $(seq 1 30); do
-          count=$(kubectl get pods -n kube-system | grep flannel | grep Running | wc -l)
+          count=$(kubectl get pods -n kube-flannel | grep flannel | grep Running | wc -l)
           if [ "$count" -gt "0" ]; then
             echo "Flannel listo"
             exit 0
