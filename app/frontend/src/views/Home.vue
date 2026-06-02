@@ -1,0 +1,172 @@
+<!-- Vista principal de CapiShop -->
+<!-- Muestra el banner de bienvenida y los productos destacados -->
+
+<template>
+  <div class="home">
+    <section class="banner">
+      <div class="banner-contenido">
+        <h1>🐾 Bienvenido a CapiShop</h1>
+        <p>Todo lo que tu mascota necesita en un solo lugar</p>
+        <router-link to="/catalogo" class="btn-ver-catalogo">
+          Ver catálogo
+        </router-link>
+      </div>
+    </section>
+
+    <section class="colecciones">
+      <h2>Nuestras colecciones</h2>
+      <div class="colecciones-grid">
+        <div
+          v-for="coleccion in colecciones"
+          :key="coleccion.nombre"
+          class="coleccion-card"
+          @click="irAColeccion(coleccion.nombre)"
+        >
+          <span class="coleccion-emoji">{{ coleccion.emoji }}</span>
+          <p>{{ coleccion.label }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="productos-destacados">
+      <h2>Productos destacados</h2>
+      <div v-if="cargando" class="cargando">Cargando productos...</div>
+      <div v-else class="productos-grid">
+        <ProductCard
+          v-for="producto in productosDestacados"
+          :key="producto._id"
+          :producto="producto"
+        />
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { getProductos } from '../api'
+import ProductCard from '../components/ProductCard.vue'
+
+const router = useRouter()
+const productosDestacados = ref([])
+const cargando = ref(true)
+
+const colecciones = [
+  { nombre: 'perros', emoji: '🐶', label: 'Perros' },
+  { nombre: 'gatos', emoji: '🐱', label: 'Gatos' },
+  { nombre: 'roedores', emoji: '🐹', label: 'Roedores' },
+  { nombre: 'aves', emoji: '🐦', label: 'Aves' },
+  { nombre: 'acuaticos', emoji: '🐠', label: 'Acuáticos' },
+  { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos' }
+]
+
+onMounted(async () => {
+  try {
+    const response = await getProductos()
+    // Muestra los primeros 8 productos como destacados
+    productosDestacados.value = response.data.slice(0, 8)
+  } catch (error) {
+    console.error('Error al cargar productos:', error)
+  } finally {
+    cargando.value = false
+  }
+})
+
+const irAColeccion = (coleccion) => {
+  router.push({ path: '/catalogo', query: { coleccion } })
+}
+</script>
+
+<style scoped>
+.banner {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  border-radius: 16px;
+  padding: 60px 40px;
+  margin-bottom: 40px;
+  text-align: center;
+  color: white;
+}
+
+.banner h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.banner p {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+  opacity: 0.9;
+}
+
+.btn-ver-catalogo {
+  background: white;
+  color: #7c3aed;
+  padding: 12px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.btn-ver-catalogo:hover {
+  transform: scale(1.05);
+}
+
+.colecciones {
+  margin-bottom: 40px;
+}
+
+.colecciones h2, .productos-destacados h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.colecciones-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+}
+
+.coleccion-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px 10px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.coleccion-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.coleccion-emoji {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.coleccion-card p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.cargando {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+</style>
