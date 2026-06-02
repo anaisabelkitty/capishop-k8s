@@ -1,0 +1,9 @@
+# Namespace dedicado para la aplicación CapiShop
+# Agrupa todos los recursos de la tienda en un espacio separado
+# para mantener orden y facilitar la gestión de permisos
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: capishop
+  labels:
+    app: capishop

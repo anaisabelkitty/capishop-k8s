@@ -1,0 +1,70 @@
+# Deployment del frontend de CapiShop
+# Sirve la aplicación Vue.js compilada con Nginx
+# La variable VITE_API_URL apunta al backend dentro del cluster
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capishop-frontend
+  namespace: capishop
+  labels:
+    app: capishop-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capishop-frontend
+  template:
+    metadata:
+      labels:
+        app: capishop-frontend
+    spec:
+      containers:
+        - name: frontend
+          # La imagen se actualiza automáticamente por ArgoCD cuando Tekton hace push
+          image: isabelkitty/capishop-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: VITE_API_URL
+              value: "http://capishop-backend.capishop.svc.cluster.local:3000/api"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+---
+# Service NodePort para acceder al frontend desde el navegador
+# El puerto 30080 es el que se usa en el navegador con la IP del master
+apiVersion: v1
+kind: Service
+metadata:
+  name: capishop-frontend
+  namespace: capishop
+  labels:
+    app: capishop-frontend
+spec:
+  type: NodePort
+  selector:
+    app: capishop-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+      name: http

@@ -1,0 +1,72 @@
+# Deployment del backend de CapiShop
+# La imagen se construye con Tekton y se sube a Docker Hub
+# La URL de MongoDB viene como variable de entorno para no hardcodearla en el código
+#
+# VITE_API_URL no va aquí porque es del frontend, no del backend
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capishop-backend
+  namespace: capishop
+  labels:
+    app: capishop-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capishop-backend
+  template:
+    metadata:
+      labels:
+        app: capishop-backend
+    spec:
+      containers:
+        - name: backend
+          # La imagen se actualiza automáticamente por ArgoCD cuando Tekton hace push
+          image: isabelkitty/capishop-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb.capishop.svc.cluster.local:27017/capishop"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+
+---
+# Service para exponer el backend dentro del cluster
+# El frontend se conecta a este service por nombre DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: capishop-backend
+  namespace: capishop
+  labels:
+    app: capishop-backend
+spec:
+  selector:
+    app: capishop-backend
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http

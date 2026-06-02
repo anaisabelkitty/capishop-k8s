@@ -1,0 +1,36 @@
+# Job para cargar los productos iniciales en MongoDB
+# Se ejecuta una sola vez al desplegar la aplicación
+# Usa la misma imagen del backend para correr el script seed.js
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: capishop-seed
+  namespace: capishop
+  labels:
+    app: capishop-seed
+spec:
+  # Si falla reintenta hasta 3 veces
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: capishop-seed
+    spec:
+      # No reinicia el pod si termina correctamente
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: isabelkitty/capishop-backend:latest
+          imagePullPolicy: Always
+          command: ["node", "scripts/seed.js"]
+          env:
+            - name: MONGODB_URI
+              value: "mongodb://mongodb.capishop.svc.cluster.local:27017/capishop"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
