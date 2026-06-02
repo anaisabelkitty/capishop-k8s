@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const conectarDB = require('./db');
 
-const productosRouter = require('./routes/productos');
+const { router: productosRouter } = require('./routes/productos');
 const wishlistRouter = require('./routes/wishlist');
 const checkoutRouter = require('./routes/checkout');
 
