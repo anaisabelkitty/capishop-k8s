@@ -1,0 +1,46 @@
+# Task para construir la imagen Docker y subirla a Docker Hub
+# Usa Kaniko para construir sin necesidad de Docker daemon
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-push
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: image
+      description: "Imagen destino en Docker Hub"
+      type: string
+    - name: dockerfile
+      description: Ruta al Dockerfile dentro del contexto
+      type: string
+      default: Dockerfile
+    - name: context
+      description: Directorio de contexto para el build
+      type: string
+      default: .
+  workspaces:
+    - name: source
+      description: Workspace con el código fuente clonado
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:v1.19.0
+      args:
+        - --dockerfile=$(workspaces.source.path)/$(params.context)/$(params.dockerfile)
+        - --context=$(workspaces.source.path)/$(params.context)
+        - --destination=$(params.image)
+        - --cache=true
+        - --cache-ttl=24h
+      env:
+        - name: DOCKER_CONFIG
+          value: /kaniko/.docker
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: docker-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json

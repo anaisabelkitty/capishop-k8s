@@ -1,0 +1,32 @@
+# PipelineRun para ejecutar el pipeline de CapiShop
+# Cada vez que se quiera lanzar el pipeline se aplica este archivo
+# Cambiar el nombre run-1 a run-2, run-3... en cada ejecución
+# O borrar el anterior: kubectl delete pipelinerun capishop-run-1 -n tekton-pipelines
+
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: capishop-run-1
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: capishop-build-deploy
+  params:
+    - name: repo-url
+      value: "https://github.com/anaisabelkitty/capishop-k8s.git"
+    - name: revision
+      value: develop
+    - name: backend-image
+      value: "isabelkitty/capishop-backend:latest"
+    - name: frontend-image
+      value: "isabelkitty/capishop-frontend:latest"
+  workspaces:
+    - name: shared-source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: nfs-csi
+          resources:
+            requests:
+              storage: 500Mi

@@ -1,0 +1,72 @@
+# Pipeline principal de CapiShop
+# Clona el repo, construye las dos imágenes y las sube a Docker Hub
+
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: capishop-build-deploy
+  namespace: tekton-pipelines
+spec:
+  params:
+    - name: repo-url
+      description: URL del repositorio GitHub
+      type: string
+    - name: revision
+      description: Branch a construir
+      type: string
+      default: develop
+    - name: backend-image
+      description: Imagen del backend en Docker Hub
+      type: string
+      default: isabelkitty/capishop-backend:latest
+    - name: frontend-image
+      description: Imagen del frontend en Docker Hub
+      type: string
+      default: isabelkitty/capishop-frontend:latest
+  workspaces:
+    - name: shared-source
+      description: Workspace compartido entre las tasks
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+        - name: source
+          workspace: shared-source
+
+    - name: build-backend
+      taskRef:
+        name: build-push
+      runAfter:
+        - clone
+      params:
+        - name: image
+          value: $(params.backend-image)
+        - name: dockerfile
+          value: Dockerfile
+        - name: context
+          value: app/backend
+      workspaces:
+        - name: source
+          workspace: shared-source
+
+    - name: build-frontend
+      taskRef:
+        name: build-push
+      runAfter:
+        - clone
+      params:
+        - name: image
+          value: $(params.frontend-image)
+        - name: dockerfile
+          value: Dockerfile
+        - name: context
+          value: app/frontend
+      workspaces:
+        - name: source
+          workspace: shared-source
