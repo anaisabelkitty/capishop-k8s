@@ -1,0 +1,28 @@
+# Aplicación de ArgoCD para CapiShop
+# ArgoCD monitorea el repo de GitHub y sincroniza automáticamente
+# cualquier cambio en la carpeta k8s/app con el cluster
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: capishop
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # Repositorio de GitHub donde están los manifiestos
+    repoURL: https://github.com/anaisabelkitty/capishop-k8s.git
+    targetRevision: develop
+    # Carpeta dentro del repo que contiene los manifiestos de la app
+    path: k8s/app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: capishop
+  syncPolicy:
+    automated:
+      # Sincroniza automáticamente cuando detecta cambios en el repo
+      selfHeal: true
+      # Elimina recursos que ya no están en el repo
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
