@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: capishop-backend-rollout
+  namespace: capishop
+  labels:
+    app: capishop-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: capishop-backend
+  template:
+    metadata:
+      labels:
+        app: capishop-backend
+    spec:
+      containers:
+        - name: backend
+          image: isabelkitty/capishop-backend:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: {duration: 30s}
+        - setWeight: 50
+        - pause: {duration: 30s}
+        - setWeight: 100

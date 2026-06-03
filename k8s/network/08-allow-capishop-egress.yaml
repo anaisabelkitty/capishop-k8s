@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-capishop-backend-egress
+  namespace: capishop
+spec:
+  podSelector:
+    matchLabels:
+      app: capishop-backend
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 27017
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
