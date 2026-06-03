@@ -1,11 +1,13 @@
 // Configuración central de axios para conectarse al backend
-// La URL base viene de la variable de entorno VITE_API_URL
-// Si no está definida usa localhost para desarrollo local
+// Usa el hostname del navegador para conectarse al backend por NodePort 30081
+// Así funciona tanto en desarrollo local como en el cluster
 
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:3000/api'
+    : `http://${window.location.hostname}:30081/api`
 })
 
 // Productos
