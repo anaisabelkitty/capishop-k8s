@@ -1,6 +1,4 @@
 <!-- Tarjeta de producto para el catálogo -->
-<!-- Muestra la imagen, nombre, precio y botones de wishlist y agregar al carrito -->
-
 <template>
   <div class="producto-card">
     <div class="imagen-contenedor" @click="verProducto">
@@ -24,10 +22,10 @@
         </button>
         <button
           class="btn-carrito"
-          @click="agregarAlCarrito"
+          @click="manejarAgregar"
           :disabled="producto.stock === 0"
         >
-          {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }}
+          {{ producto.stock === 0 ? 'Agotado' : producto.tallas.length > 0 ? 'Ver tallas' : 'Agregar' }}
         </button>
       </div>
     </div>
@@ -49,7 +47,6 @@ const props = defineProps({
 const emit = defineEmits(['agregado-carrito'])
 const router = useRouter()
 
-// Obtiene o crea el sessionId del usuario en localStorage
 const sessionId = localStorage.getItem('sessionId') || (() => {
   const id = Math.random().toString(36).substring(2)
   localStorage.setItem('sessionId', id)
@@ -59,13 +56,38 @@ const sessionId = localStorage.getItem('sessionId') || (() => {
 const enWishlist = ref(false)
 
 onMounted(() => {
-  // Verifica si el producto ya está en la wishlist local
   const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
   enWishlist.value = wishlistLocal.includes(props.producto._id)
 })
 
 const verProducto = () => {
   router.push(`/producto/${props.producto._id}`)
+}
+
+const manejarAgregar = () => {
+  if (props.producto.tallas.length > 0) {
+    router.push(`/producto/${props.producto._id}`)
+    return
+  }
+  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
+  const key = `${props.producto._id}-`
+  const existente = carrito.find(item => item.key === key)
+  if (existente) {
+    existente.cantidad += 1
+  } else {
+    carrito.push({
+      key,
+      productoId: props.producto._id,
+      cantidad: 1,
+      nombre: props.producto.nombre,
+      precio: props.producto.precio,
+      imagen: props.producto.imagenes[0],
+      talla: ''
+    })
+  }
+  localStorage.setItem('carrito', JSON.stringify(carrito))
+  emit('agregado-carrito')
+  alert(`${props.producto.nombre} agregado al carrito`)
 }
 
 const toggleWishlist = async () => {
@@ -84,19 +106,6 @@ const toggleWishlist = async () => {
   } catch (error) {
     console.error('Error al actualizar wishlist:', error)
   }
-}
-
-const agregarAlCarrito = () => {
-  const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
-  const existente = carrito.find(item => item.productoId === props.producto._id)
-  if (existente) {
-    existente.cantidad += 1
-  } else {
-    carrito.push({ productoId: props.producto._id, cantidad: 1, nombre: props.producto.nombre, precio: props.producto.precio, imagen: props.producto.imagenes[0] })
-  }
-  localStorage.setItem('carrito', JSON.stringify(carrito))
-  emit('agregado-carrito')
-  alert(`${props.producto.nombre} agregado al carrito`)
 }
 </script>
 
