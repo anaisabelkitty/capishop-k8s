@@ -32,7 +32,7 @@ spec:
             - name: PORT
               value: "3000"
             - name: MONGODB_URI
-              value: "mongodb://mongodb.capishop.svc.cluster.local:27017/capishop"
+              value: "mongodb://mongodb-0.mongodb-headless.capishop.svc.cluster.local:27017,mongodb-1.mongodb-headless.capishop.svc.cluster.local:27017,mongodb-2.mongodb-headless.capishop.svc.cluster.local:27017/capishop?replicaSet=rs0"
           livenessProbe:
             httpGet:
               path: /health
