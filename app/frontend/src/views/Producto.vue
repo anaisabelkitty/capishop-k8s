@@ -1,6 +1,4 @@
 <!-- Vista de detalle de un producto -->
-<!-- Muestra las imágenes, descripción, tallas, colores y botones de acción -->
-
 <template>
   <div class="producto-detalle">
     <div v-if="cargando" class="cargando">Cargando producto...</div>
@@ -45,6 +43,7 @@
               {{ talla }}
             </button>
           </div>
+          <p v-if="!tallaSeleccionada" class="aviso-talla">⚠️ Selecciona una talla</p>
         </div>
 
         <div v-if="producto.colores.length > 0" class="opciones">
@@ -67,7 +66,7 @@
           <button
             class="btn-carrito"
             @click="agregarAlCarrito"
-            :disabled="producto.stock === 0"
+            :disabled="producto.stock === 0 || (producto.tallas.length > 0 && !tallaSeleccionada)"
           >
             🛒 Agregar al carrito
           </button>
@@ -129,21 +128,29 @@ const toggleWishlist = async () => {
 }
 
 const agregarAlCarrito = () => {
+  if (producto.value.tallas.length > 0 && !tallaSeleccionada.value) {
+    return
+  }
+
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
-  const existente = carrito.find(item => item.productoId === producto.value._id)
+  const key = `${producto.value._id}-${tallaSeleccionada.value}`
+  const existente = carrito.find(item => item.key === key)
+
   if (existente) {
     existente.cantidad += 1
   } else {
     carrito.push({
+      key,
       productoId: producto.value._id,
       cantidad: 1,
       nombre: producto.value.nombre,
       precio: producto.value.precio,
-      imagen: producto.value.imagenes[0]
+      imagen: producto.value.imagenes[0],
+      talla: tallaSeleccionada.value
     })
   }
   localStorage.setItem('carrito', JSON.stringify(carrito))
-  alert(`${producto.value.nombre} agregado al carrito`)
+  alert(`${producto.value.nombre}${tallaSeleccionada.value ? ` (${tallaSeleccionada.value})` : ''} agregado al carrito`)
 }
 </script>
 
@@ -247,6 +254,13 @@ h1 {
   border-color: #7c3aed;
   background: #7c3aed;
   color: white;
+}
+
+.aviso-talla {
+  color: #f59e0b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 8px;
 }
 
 .color-texto {
