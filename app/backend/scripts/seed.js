@@ -1,13 +1,10 @@
 // Script para cargar los productos iniciales en MongoDB
-// Se ejecuta una sola vez al desplegar la aplicación
-// Usa los mismos nombres de imagen que están en app/frontend/public/images/productos/
-
 require('dotenv').config();
 const mongoose = require('mongoose');
 const { Producto } = require('../src/routes/productos');
 
 const productos = [
-  // Colección Perros
+  // ==================== PERROS ====================
   {
     nombre: 'Arnés Negro para Perro',
     descripcion: 'Arnés de malla transpirable con hebillas de metal. Ajustable para mayor comodidad.',
@@ -97,6 +94,50 @@ const productos = [
     stock: 15
   },
   {
+    nombre: 'Disfraz Abeja para Perro',
+    descripcion: 'Disfraz de abeja amarillo y negro con alas. Perfecto para Halloween y fotos.',
+    precio: 279,
+    coleccion: 'perros',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M', 'L'],
+    colores: ['amarillo', 'negro'],
+    imagenes: ['ropa-perro-3.png'],
+    stock: 15
+  },
+  {
+    nombre: 'Disfraz Dinosaurio para Perro',
+    descripcion: 'Disfraz de dinosaurio verde con pinchos en la espalda. Adorable y divertido.',
+    precio: 299,
+    coleccion: 'perros',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M', 'L'],
+    colores: ['verde'],
+    imagenes: ['ropa-perro-4.png'],
+    stock: 12
+  },
+  {
+    nombre: 'Traje Formal para Perro',
+    descripcion: 'Elegante traje negro con corbata de moño. Perfecto para ocasiones especiales.',
+    precio: 349,
+    coleccion: 'perros',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M', 'L'],
+    colores: ['negro'],
+    imagenes: ['ropa-perro-5.png'],
+    stock: 10
+  },
+  {
+    nombre: 'Vestido Vaquero Rosa para Perro',
+    descripcion: 'Vestido con parte superior de mezclilla y falda de tul rosa. Muy fashionista.',
+    precio: 329,
+    coleccion: 'perros',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M'],
+    colores: ['rosa', 'azul'],
+    imagenes: ['ropa-perro-6.png'],
+    stock: 10
+  },
+  {
     nombre: 'Snack Natural para Perro',
     descripcion: 'Bolsa de premios naturales para perro. Sin conservadores artificiales.',
     precio: 89,
@@ -118,7 +159,51 @@ const productos = [
     imagenes: ['snack-perro-2.png', 'snack-perro-1.png'],
     stock: 45
   },
-  // Colección Gatos
+  {
+    nombre: 'Juguete Cuerda para Perro',
+    descripcion: 'Juguete de cuerda trenzada verde y azul. Ideal para jugar y limpiar los dientes.',
+    precio: 119,
+    coleccion: 'perros',
+    categoria: 'juguete',
+    tallas: [],
+    colores: ['verde', 'azul'],
+    imagenes: ['juguete-perro-1.png'],
+    stock: 30
+  },
+  {
+    nombre: 'Hueso de Caucho para Perro',
+    descripcion: 'Hueso de caucho amarillo con puntas masajeadoras. Resistente y seguro.',
+    precio: 149,
+    coleccion: 'perros',
+    categoria: 'juguete',
+    tallas: [],
+    colores: ['amarillo'],
+    imagenes: ['juguete-perro-2.png'],
+    stock: 25
+  },
+  {
+    nombre: 'Jaula Metálica para Perro',
+    descripcion: 'Jaula de metal plegable con bandeja extraíble. Ideal para entrenamiento y viajes.',
+    precio: 899,
+    coleccion: 'perros',
+    categoria: 'jaula',
+    tallas: ['M', 'L', 'XL'],
+    colores: ['negro'],
+    imagenes: ['jaula-perro-1.png'],
+    stock: 8
+  },
+  {
+    nombre: 'Transportadora para Perro',
+    descripcion: 'Transportadora rígida azul marino con puerta metálica y asa. Cómoda y segura.',
+    precio: 599,
+    coleccion: 'perros',
+    categoria: 'transportadora',
+    tallas: ['S', 'M', 'L'],
+    colores: ['azul marino'],
+    imagenes: ['transportadora-perro-1.png'],
+    stock: 10
+  },
+  // ==================== GATOS ====================
   {
     nombre: 'Arnés Lila para Gato',
     descripcion: 'Arnés suave color lila con hebillas ajustables. Perfecto para paseos.',
@@ -175,7 +260,7 @@ const productos = [
     stock: 35
   },
   {
-    nombre: 'Pista Interactiva Azul para Gato',
+    nombre: 'Pista Interactiva para Gato',
     descripcion: 'Pista circular interactiva con pelota interior. Mantiene a tu gato entretenido.',
     precio: 179,
     coleccion: 'gatos',
@@ -207,7 +292,84 @@ const productos = [
     imagenes: ['snack-gato-2.png', 'snack-gato-1.png'],
     stock: 45
   },
-  // Colección Roedores
+  {
+    nombre: 'Suéter Rayas Pastel para Gato',
+    descripcion: 'Suéter de punto con rayas pastel multicolor. Suave y cómodo para tu gato.',
+    precio: 199,
+    coleccion: 'gatos',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M'],
+    colores: ['multicolor'],
+    imagenes: ['ropa-gato-1.png'],
+    stock: 15
+  },
+  {
+    nombre: 'Suéter Rayas Naranja para Gato',
+    descripcion: 'Suéter de punto con rayas naranja y gris. Abrigador y elegante.',
+    precio: 199,
+    coleccion: 'gatos',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M'],
+    colores: ['naranja', 'gris'],
+    imagenes: ['ropa-gato-2.png'],
+    stock: 15
+  },
+  {
+    nombre: 'Suéter Rojo Tejido para Gato',
+    descripcion: 'Suéter tejido de cuello alto color rojo. Perfecto para el invierno.',
+    precio: 229,
+    coleccion: 'gatos',
+    categoria: 'ropa',
+    tallas: ['XS', 'S', 'M'],
+    colores: ['rojo'],
+    imagenes: ['ropa-gato-3.png'],
+    stock: 12
+  },
+  {
+    nombre: 'Cama Canasta de Mimbre para Gato',
+    descripcion: 'Cama canasta de mimbre natural con cojín suave. Estilo natural y acogedor.',
+    precio: 749,
+    coleccion: 'gatos',
+    categoria: 'cama',
+    tallas: [],
+    colores: ['natural'],
+    imagenes: ['cama-gato-1.png'],
+    stock: 8
+  },
+  {
+    nombre: 'Casita de Campaña para Gato',
+    descripcion: 'Casita tipi amarilla con pompones decorativos y cojín interior. Acogedora y divertida.',
+    precio: 699,
+    coleccion: 'gatos',
+    categoria: 'cama',
+    tallas: [],
+    colores: ['amarillo'],
+    imagenes: ['cama-gato-2.png'],
+    stock: 6
+  },
+  {
+    nombre: 'Transportadora Café para Gato',
+    descripcion: 'Transportadora rígida beige y café con puerta metálica. Cómoda para viajes al veterinario.',
+    precio: 549,
+    coleccion: 'gatos',
+    categoria: 'transportadora',
+    tallas: [],
+    colores: ['café', 'beige'],
+    imagenes: ['transportadora-gato-1.png'],
+    stock: 10
+  },
+  {
+    nombre: 'Mochila Cápsula para Gato',
+    descripcion: 'Mochila con ventana de burbuja transparente. Tu gato viajará en estilo y con vista panorámica.',
+    precio: 799,
+    coleccion: 'gatos',
+    categoria: 'transportadora',
+    tallas: [],
+    colores: ['negro'],
+    imagenes: ['transportadora-gato-2.png'],
+    stock: 8
+  },
+  // ==================== ROEDORES ====================
   {
     nombre: 'Jaula Blanca para Hámster',
     descripcion: 'Jaula moderna blanca con rueda naranja y accesorios incluidos.',
@@ -252,7 +414,29 @@ const productos = [
     imagenes: ['rueda-hamster-2.png', 'rueda-hamster-1.png'],
     stock: 18
   },
-  // Colección Aves
+  {
+    nombre: 'Arnés Gris para Roedor',
+    descripcion: 'Arnés suave de malla gris para conejos y cobayas. Ajustable y cómodo.',
+    precio: 179,
+    coleccion: 'roedores',
+    categoria: 'arnes',
+    tallas: ['XS', 'S'],
+    colores: ['gris'],
+    imagenes: ['arnes-roedor-1.png'],
+    stock: 15
+  },
+  {
+    nombre: 'Transportadora Café para Roedor',
+    descripcion: 'Transportadora de tela café con ventana transparente. Ideal para conejos y cobayas.',
+    precio: 349,
+    coleccion: 'roedores',
+    categoria: 'transportadora',
+    tallas: [],
+    colores: ['café'],
+    imagenes: ['transportadora-roedor-1.png'],
+    stock: 10
+  },
+  // ==================== AVES ====================
   {
     nombre: 'Jaula Dorada para Pájaro',
     descripcion: 'Jaula decorativa color dorado estilo vintage con percha de madera.',
@@ -297,7 +481,29 @@ const productos = [
     imagenes: ['juguete-pajaro-2.png', 'juguete-pajaro-1.png'],
     stock: 30
   },
-  // Colección Acuáticos
+  {
+    nombre: 'Bebedero Azul para Pájaro',
+    descripcion: 'Bebedero automático azul cielo con clip para jaula. Fácil de limpiar y rellenar.',
+    precio: 79,
+    coleccion: 'aves',
+    categoria: 'tazon',
+    tallas: [],
+    colores: ['azul cielo'],
+    imagenes: ['bebedero-pajaro-1.png'],
+    stock: 30
+  },
+  {
+    nombre: 'Comedero Casa para Pájaro',
+    descripcion: 'Comedero en forma de casita transparente con ventosas para ventana. Atrae pájaros silvestres.',
+    precio: 149,
+    coleccion: 'aves',
+    categoria: 'tazon',
+    tallas: [],
+    colores: ['transparente'],
+    imagenes: ['comedero-pajaro-1.png'],
+    stock: 20
+  },
+  // ==================== ACUÁTICOS ====================
   {
     nombre: 'Pecera Cúbica con Plantas',
     descripcion: 'Pecera de vidrio cúbica con plantas acuáticas y peces de colores.',
@@ -342,7 +548,29 @@ const productos = [
     imagenes: ['deco-pecera-2.png', 'deco-pecera-1.png'],
     stock: 15
   },
-  // Colección Exóticos
+  {
+    nombre: 'Alimento para Peces',
+    descripcion: 'Alimento en hojuelas para peces tropicales y de agua fría. Enriquecido con vitaminas.',
+    precio: 89,
+    coleccion: 'acuaticos',
+    categoria: 'snack',
+    tallas: [],
+    colores: [],
+    imagenes: ['comida-peces-1.png'],
+    stock: 40
+  },
+  {
+    nombre: 'Alimento para Tortuga',
+    descripcion: 'Alimento en pellets para tortugas acuáticas. Rico en calcio y proteínas.',
+    precio: 99,
+    coleccion: 'acuaticos',
+    categoria: 'snack',
+    tallas: [],
+    colores: [],
+    imagenes: ['comida-tortuga-1.png'],
+    stock: 35
+  },
+  // ==================== EXÓTICOS ====================
   {
     nombre: 'Terrario con Plantas Tropicales',
     descripcion: 'Terrario de vidrio grande con plantas tropicales incluidas. Ideal para iguanas.',
@@ -417,11 +645,9 @@ const cargarProductos = async () => {
     await mongoose.connect(uri);
     console.log('Conectado a MongoDB');
 
-    // Limpia los productos existentes antes de cargar
     await Producto.deleteMany({});
     console.log('Productos anteriores eliminados');
 
-    // Inserta los productos nuevos
     await Producto.insertMany(productos);
     console.log(`${productos.length} productos cargados correctamente`);
 
