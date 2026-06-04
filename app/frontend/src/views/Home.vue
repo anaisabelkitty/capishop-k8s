@@ -4,7 +4,7 @@
     <section class="banner">
       <div class="banner-contenido">
         <h1>Bienvenido a CapiShop</h1>
-        <p>Todo lo que tu mascota necesita en un solo lugar</p>
+        <p>Todo lo necesario para una mascota feliz.</p>
         <router-link to="/catalogo" class="btn-ver-catalogo">
           Ver catálogo
         </router-link>
@@ -15,12 +15,13 @@
     </section>
 
     <section class="colecciones">
-      <h2>Nuestras colecciones</h2>
+      <h2>¿Quién es tu mejor amigo?</h2>
       <div class="colecciones-grid">
         <div
           v-for="coleccion in colecciones"
           :key="coleccion.nombre"
           class="coleccion-card"
+          :style="{ backgroundColor: coleccion.color }"
           @click="irAColeccion(coleccion.nombre)"
         >
           <span class="coleccion-emoji">{{ coleccion.emoji }}</span>
@@ -54,18 +55,21 @@ const productosDestacados = ref([])
 const cargando = ref(true)
 
 const colecciones = [
-  { nombre: 'perros', emoji: '🐶', label: 'Perros' },
-  { nombre: 'gatos', emoji: '🐱', label: 'Gatos' },
-  { nombre: 'roedores', emoji: '🐹', label: 'Roedores' },
-  { nombre: 'aves', emoji: '🐦', label: 'Aves' },
-  { nombre: 'acuaticos', emoji: '🐠', label: 'Acuáticos' },
-  { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos' }
+  { nombre: 'perros', emoji: '🐶', label: 'Perros', color: '#FFF0D6' },
+  { nombre: 'gatos', emoji: '🐱', label: 'Gatos', color: '#FFE4F0' },
+  { nombre: 'roedores', emoji: '🐹', label: 'Roedores', color: '#FFF3CD' },
+  { nombre: 'aves', emoji: '🐦', label: 'Aves', color: '#E8F4FD' },
+  { nombre: 'acuaticos', emoji: '🐠', label: 'Acuáticos', color: '#D6F0FF' },
+  { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos', color: '#E8FFE8' }
 ]
 
 onMounted(async () => {
   try {
-    const response = await getProductos()
-    productosDestacados.value = response.data.slice(0, 8)
+    const coleccionesNombres = ['perros', 'gatos', 'roedores', 'aves', 'acuaticos', 'exoticos']
+    const resultados = await Promise.all(
+      coleccionesNombres.map(c => getProductos({ coleccion: c }))
+    )
+    productosDestacados.value = resultados.flatMap(r => r.data.slice(0, 2))
   } catch (error) {
     console.error('Error al cargar productos:', error)
   } finally {
@@ -152,7 +156,6 @@ const irAColeccion = (coleccion) => {
 }
 
 .coleccion-card {
-  background: white;
   border-radius: 12px;
   padding: 20px 10px;
   text-align: center;
