@@ -1,6 +1,4 @@
 <!-- Vista de checkout de CapiShop -->
-<!-- Muestra el resumen del carrito y procesa el pedido descontando el stock en tiempo real -->
-
 <template>
   <div class="checkout">
     <h1>🛒 Mi Carrito</h1>
@@ -16,7 +14,7 @@
       <div class="items-carrito">
         <div
           v-for="item in carrito"
-          :key="item.productoId"
+          :key="item.key || item.productoId"
           class="item-card"
         >
           <img
@@ -26,6 +24,7 @@
           />
           <div class="item-info">
             <h3>{{ item.nombre }}</h3>
+            <p v-if="item.talla" class="item-talla">Talla: {{ item.talla }}</p>
             <p class="item-precio">${{ item.precio.toLocaleString() }} MXN</p>
           </div>
           <div class="item-cantidad">
@@ -56,7 +55,7 @@
         </div>
 
         <div v-if="error" class="error-mensaje">{{ error }}</div>
-        <div v-if="exito" class="exito-mensaje">¡Pedido confirmado! Gracias por tu compra.</div>
+        <div v-if="exito" class="exito-mensaje">¡Pedido confirmado! Gracias por tu compra. 🎉</div>
 
         <button
           class="btn-confirmar"
@@ -72,7 +71,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { procesarCheckout } from '../api'
+import { procesarCheckout, getProducto } from '../api'
 
 const carrito = ref([])
 const procesando = ref(false)
@@ -104,7 +103,7 @@ const cambiarCantidad = (item, delta) => {
 }
 
 const eliminarItem = (item) => {
-  carrito.value = carrito.value.filter(i => i.productoId !== item.productoId)
+  carrito.value = carrito.value.filter(i => (i.key || i.productoId) !== (item.key || item.productoId))
   localStorage.setItem('carrito', JSON.stringify(carrito.value))
 }
 
@@ -112,6 +111,17 @@ const confirmarPedido = async () => {
   procesando.value = true
   error.value = ''
   try {
+    // Verificar stock antes de confirmar
+    for (const item of carrito.value) {
+      const response = await getProducto(item.productoId)
+      const producto = response.data
+      if (producto.stock < item.cantidad) {
+        error.value = `Stock insuficiente para: ${producto.nombre}. Solo hay ${producto.stock} disponible${producto.stock === 1 ? '' : 's'}.`
+        procesando.value = false
+        return
+      }
+    }
+
     await procesarCheckout(sessionId, carrito.value.map(item => ({
       productoId: item.productoId,
       cantidad: item.cantidad
@@ -167,6 +177,13 @@ const confirmarPedido = async () => {
 .item-info h3 {
   font-size: 0.95rem;
   color: #333;
+  margin-bottom: 2px;
+}
+
+.item-talla {
+  font-size: 0.8rem;
+  color: #7c3aed;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 

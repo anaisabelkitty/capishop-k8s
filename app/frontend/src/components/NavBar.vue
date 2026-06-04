@@ -1,11 +1,10 @@
 <!-- Barra de navegación de CapiShop -->
-<!-- Muestra el logo, los links de navegación y el contador de wishlist -->
-
 <template>
   <nav class="navbar">
     <div class="navbar-contenido">
       <router-link to="/" class="logo">
-        🐾 CapiShop
+        <img src="/images/logo-capishop.png" alt="CapiShop" class="logo-img" />
+        <span>CapiShop</span>
       </router-link>
       <div class="nav-links">
         <router-link to="/">Inicio</router-link>
@@ -28,7 +27,7 @@
 .navbar {
   background-color: #ffffff;
   border-bottom: 2px solid #f0f0f0;
-  padding: 15px 20px;
+  padding: 12px 20px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -44,10 +43,19 @@
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 1.5rem;
   font-weight: 700;
   color: #7c3aed;
   text-decoration: none;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .nav-links {

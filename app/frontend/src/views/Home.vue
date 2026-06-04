@@ -1,15 +1,16 @@
 <!-- Vista principal de CapiShop -->
-<!-- Muestra el banner de bienvenida y los productos destacados -->
-
 <template>
   <div class="home">
     <section class="banner">
       <div class="banner-contenido">
-        <h1>🐾 Bienvenido a CapiShop</h1>
+        <h1>Bienvenido a CapiShop</h1>
         <p>Todo lo que tu mascota necesita en un solo lugar</p>
         <router-link to="/catalogo" class="btn-ver-catalogo">
           Ver catálogo
         </router-link>
+      </div>
+      <div class="banner-imagen">
+        <img src="/images/banner-hero.png" alt="CapiShop mascotas" />
       </div>
     </section>
 
@@ -64,7 +65,6 @@ const colecciones = [
 onMounted(async () => {
   try {
     const response = await getProductos()
-    // Muestra los primeros 8 productos como destacados
     productosDestacados.value = response.data.slice(0, 8)
   } catch (error) {
     console.error('Error al cargar productos:', error)
@@ -82,19 +82,28 @@ const irAColeccion = (coleccion) => {
 .banner {
   background: linear-gradient(135deg, #7c3aed, #a78bfa);
   border-radius: 16px;
-  padding: 60px 40px;
+  padding: 50px 40px;
   margin-bottom: 40px;
-  text-align: center;
   color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.banner-contenido {
+  flex: 1;
 }
 
 .banner h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   margin-bottom: 10px;
+  font-weight: 800;
 }
 
 .banner p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 25px;
   opacity: 0.9;
 }
@@ -113,6 +122,17 @@ const irAColeccion = (coleccion) => {
 
 .btn-ver-catalogo:hover {
   transform: scale(1.05);
+}
+
+.banner-imagen {
+  flex: 0 0 auto;
+  margin-left: 20px;
+}
+
+.banner-imagen img {
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
 }
 
 .colecciones {
