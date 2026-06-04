@@ -44,18 +44,19 @@
             </button>
           </div>
           <p v-if="!tallaSeleccionada" class="aviso-talla">⚠️ Selecciona una talla</p>
+          <p v-else class="stock-info" :class="{ agotado: stockTallaActual === 0 }">
+            {{ stockTallaActual === 0 ? 'Agotado en esta talla' : `${stockTallaActual} disponibles en talla ${tallaSeleccionada}` }}
+          </p>
         </div>
+
+        <p v-else class="stock-info" :class="{ agotado: producto.stock === 0 }">
+          {{ producto.stock === 0 ? 'Agotado' : `${producto.stock} disponibles` }}
+        </p>
 
         <div v-if="producto.colores.length > 0" class="opciones">
           <label>Color</label>
           <p class="color-texto">{{ producto.colores.join(', ') }}</p>
         </div>
-
-        <p class="stock-info" :class="{ agotado: producto.stock === 0 }">
-          <span v-if="producto.stock === 0">Agotado</span>
-          <span v-else-if="tallaSeleccionada">{{ producto.stock }} disponibles en talla {{ tallaSeleccionada }}</span>
-          <span v-else>{{ producto.stock }} disponibles en total</span>
-        </p>
 
         <div class="acciones">
           <button
@@ -79,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getProducto, agregarWishlist, eliminarWishlist } from '../api'
 
@@ -89,6 +90,13 @@ const cargando = ref(true)
 const imagenActiva = ref('')
 const tallaSeleccionada = ref('')
 const enWishlist = ref(false)
+
+const stockTallaActual = computed(() => {
+  if (!producto.value || !tallaSeleccionada.value) return 0
+  const stockMap = producto.value.stockPorTalla
+  if (!stockMap) return producto.value.stock
+  return stockMap[tallaSeleccionada.value] ?? 0
+})
 
 const sessionId = localStorage.getItem('sessionId') || (() => {
   const id = Math.random().toString(36).substring(2)
@@ -130,9 +138,7 @@ const toggleWishlist = async () => {
 }
 
 const agregarAlCarrito = () => {
-  if (producto.value.tallas.length > 0 && !tallaSeleccionada.value) {
-    return
-  }
+  if (producto.value.tallas.length > 0 && !tallaSeleccionada.value) return
 
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
   const key = `${producto.value._id}-${tallaSeleccionada.value}`
@@ -274,6 +280,7 @@ h1 {
   font-size: 0.9rem;
   color: #22c55e;
   font-weight: 600;
+  margin-top: 8px;
   margin-bottom: 20px;
 }
 
@@ -284,6 +291,7 @@ h1 {
 .acciones {
   display: flex;
   gap: 12px;
+  margin-top: 20px;
 }
 
 .btn-wishlist {

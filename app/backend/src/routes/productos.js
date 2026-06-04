@@ -22,6 +22,11 @@ const productoSchema = new mongoose.Schema({
     required: true
   },
   tallas: [{ type: String, enum: ['XS', 'S', 'M', 'L', 'XL'] }],
+  stockPorTalla: {
+    type: Map,
+    of: Number,
+    default: {}
+  },
   colores: [String],
   imagenes: [String],
   stock: { type: Number, required: true, default: 0 },
@@ -34,22 +39,11 @@ const Producto = mongoose.model('Producto', productoSchema);
 router.get('/', async (req, res) => {
   try {
     const filtros = {};
-
-    // Filtro por coleccion (perros, gatos, etc)
     if (req.query.coleccion) filtros.coleccion = req.query.coleccion;
-
-    // Filtro por categoria (arnes, juguete, etc)
     if (req.query.categoria) filtros.categoria = req.query.categoria;
-
-    // Filtro por talla
     if (req.query.talla) filtros.tallas = req.query.talla;
-
-    // Filtro por color
     if (req.query.color) filtros.colores = req.query.color;
-
-    // Solo productos disponibles
     filtros.disponible = true;
-
     const productos = await Producto.find(filtros);
     res.json(productos);
   } catch (error) {
