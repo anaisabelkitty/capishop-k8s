@@ -52,7 +52,9 @@
         </div>
 
         <p class="stock-info" :class="{ agotado: producto.stock === 0 }">
-          {{ producto.stock === 0 ? 'Agotado' : `${producto.stock} disponibles` }}
+          <span v-if="producto.stock === 0">Agotado</span>
+          <span v-else-if="tallaSeleccionada">{{ producto.stock }} disponibles en talla {{ tallaSeleccionada }}</span>
+          <span v-else>{{ producto.stock }} disponibles en total</span>
         </p>
 
         <div class="acciones">
