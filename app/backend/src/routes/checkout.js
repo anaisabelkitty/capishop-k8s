@@ -58,10 +58,7 @@ router.post('/', async (req, res) => {
 
       // Verifica stock por talla si aplica
       if (item.talla && producto.tallas && producto.tallas.length > 0) {
-        const stockMap = producto.stockPorTalla instanceof Map
-          ? Object.fromEntries(producto.stockPorTalla)
-          : producto.stockPorTalla || {};
-        const stockTalla = stockMap[item.talla] || 0;
+        const stockTalla = (producto.stockPorTalla && producto.stockPorTalla[item.talla]) || 0;
         if (stockTalla < item.cantidad) {
           await session.abortTransaction();
           return res.status(400).json({

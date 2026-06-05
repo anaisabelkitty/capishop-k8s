@@ -23,8 +23,7 @@ const productoSchema = new mongoose.Schema({
   },
   tallas: [{ type: String, enum: ['XS', 'S', 'M', 'L', 'XL'] }],
   stockPorTalla: {
-    type: Map,
-    of: Number,
+    type: Object,
     default: {}
   },
   colores: [String],
