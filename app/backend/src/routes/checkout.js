@@ -75,6 +75,7 @@ router.post('/', async (req, res) => {
       if (item.talla && producto.stockPorTalla) {
         const stockTalla = producto.stockPorTalla.get(item.talla) || 0;
         producto.stockPorTalla.set(item.talla, stockTalla - item.cantidad);
+        producto.markModified('stockPorTalla');
       }
 
       if (producto.stock === 0) producto.disponible = false;
