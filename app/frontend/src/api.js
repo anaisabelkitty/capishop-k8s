@@ -4,10 +4,13 @@
 
 import axios from 'axios'
 
+const protocol = window.location.protocol
+const hostname = window.location.hostname
+
 const api = axios.create({
-  baseURL: window.location.hostname === 'localhost'
+  baseURL: hostname === 'localhost'
     ? 'http://localhost:3000/api'
-    : `http://${window.location.hostname}:30081/api`
+    : `${protocol}//${hostname}:30081/api`
 })
 
 // Productos

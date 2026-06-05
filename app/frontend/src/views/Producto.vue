@@ -74,6 +74,9 @@
               🛒 Agregar al carrito
             </button>
           </div>
+          <div v-if="notificacion" class="notificacion-carrito">
+            ✓ {{ notificacion }}
+          </div>
         </div>
       </div>
 
@@ -117,7 +120,7 @@ const imagenActiva = ref('')
 const tallaSeleccionada = ref('')
 const enWishlist = ref(false)
 const relacionados = ref([])
-
+const notificacion = ref('')
 const stockTallaActual = computed(() => {
   if (!producto.value || !tallaSeleccionada.value) return 0
   const stockMap = producto.value.stockPorTalla
@@ -207,7 +210,8 @@ const agregarAlCarrito = () => {
     })
   }
   localStorage.setItem('carrito', JSON.stringify(carrito))
-  alert(`${producto.value.nombre}${tallaSeleccionada.value ? ` (${tallaSeleccionada.value})` : ''} agregado al carrito`)
+  notificacion.value = `${producto.value.nombre}${tallaSeleccionada.value ? ` (${tallaSeleccionada.value})` : ''} agregado al carrito`
+  setTimeout(() => { notificacion.value = '' }, 3000)
 }
 </script>
 
@@ -385,6 +389,17 @@ h1 {
   text-align: center;
   padding: 60px;
   color: #888;
+}
+
+.notificacion-carrito {
+  background: #f0ebff;
+  color: #7c3aed;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 12px;
+  border: 1px solid #ddd5ff;
 }
 
 .relacionados {
