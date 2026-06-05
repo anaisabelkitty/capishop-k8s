@@ -44,12 +44,9 @@
               </button>
             </div>
             <p v-if="!tallaSeleccionada" class="aviso-talla">⚠️ Selecciona una talla</p>
-            <p v-else class="stock-info" :class="{ agotado: stockTallaActual === 0 }">
-              {{ stockTallaActual === 0 ? 'Agotado en esta talla' : `${stockTallaActual} disponibles en talla ${tallaSeleccionada}` }}
-            </p>
           </div>
 
-          <p v-else class="stock-info" :class="{ agotado: producto.stock === 0 }">
+          <p class="stock-info" :class="{ agotado: producto.stock === 0 }">
             {{ producto.stock === 0 ? 'Agotado' : `${producto.stock} disponibles` }}
           </p>
 
@@ -108,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getProducto, getProductos, agregarWishlist, eliminarWishlist } from '../api'
 
@@ -121,12 +118,6 @@ const tallaSeleccionada = ref('')
 const enWishlist = ref(false)
 const relacionados = ref([])
 const notificacion = ref('')
-const stockTallaActual = computed(() => {
-  if (!producto.value || !tallaSeleccionada.value) return 0
-  const stockMap = producto.value.stockPorTalla
-  if (!stockMap) return producto.value.stock
-  return stockMap[tallaSeleccionada.value] ?? 0
-})
 
 const sessionId = localStorage.getItem('sessionId') || (() => {
   const id = Math.random().toString(36).substring(2)
@@ -146,7 +137,6 @@ const cargarProducto = async (id) => {
     const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
     enWishlist.value = wishlistLocal.includes(producto.value._id)
 
-    // Cargar productos relacionados de la misma categoría
     const relResponse = await getProductos({
       coleccion: producto.value.coleccion,
       categoria: producto.value.categoria
@@ -333,7 +323,6 @@ h1 {
   font-size: 0.9rem;
   color: #22c55e;
   font-weight: 600;
-  margin-top: 8px;
   margin-bottom: 20px;
 }
 
