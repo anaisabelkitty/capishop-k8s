@@ -5,7 +5,7 @@
   <div id="app">
     <NavBar />
     <main class="contenido-principal">
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </main>
   </div>
 </template>
