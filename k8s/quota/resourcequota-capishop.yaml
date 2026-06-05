@@ -1,9 +1,12 @@
+# ResourceQuota que limita el consumo del namespace capishop
+# Pone topes de CPU, memoria, número de pods y PVCs para que no se pase
 apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: capishop-quota
   namespace: capishop
 spec:
+  # Topes duros: la suma de todo el namespace no puede superar estos valores
   hard:
     requests.cpu: "2"
     requests.memory: "2Gi"

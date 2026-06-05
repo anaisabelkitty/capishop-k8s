@@ -35,6 +35,7 @@ import ProductCard from '../components/ProductCard.vue'
 const productos = ref([])
 const cargando = ref(true)
 
+// Recupera el id de sesión guardado o crea uno si es la primera vez
 const sessionId = localStorage.getItem('sessionId') || (() => {
   const id = Math.random().toString(36).substring(2)
   localStorage.setItem('sessionId', id)

@@ -1,10 +1,12 @@
 <!-- Vista de detalle de un producto -->
+<!-- Muestra la galería, la info, las tallas y los productos relacionados -->
 <template>
   <div class="producto-detalle">
     <div v-if="cargando" class="cargando">Cargando producto...</div>
     <div v-else-if="!producto" class="error">Producto no encontrado.</div>
     <div v-else>
       <div class="detalle-contenido">
+        <!-- Imagen grande más las miniaturas para cambiar de foto -->
         <div class="imagenes-galeria">
           <img
             :src="`/images/productos/${imagenActiva}`"
@@ -24,6 +26,7 @@
           </div>
         </div>
 
+        <!-- Datos del producto y botones para wishlist y carrito -->
         <div class="producto-info">
           <p class="coleccion-badge">{{ producto.coleccion }}</p>
           <h1>{{ producto.nombre }}</h1>
@@ -125,6 +128,7 @@ const sessionId = localStorage.getItem('sessionId') || (() => {
   return id
 })()
 
+// Carga el producto por id, sus imágenes, si está en wishlist y los relacionados
 const cargarProducto = async (id) => {
   cargando.value = true
   tallaSeleccionada.value = ''
@@ -137,6 +141,7 @@ const cargarProducto = async (id) => {
     const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
     enWishlist.value = wishlistLocal.includes(producto.value._id)
 
+    // Busca otros productos de la misma colección y categoría como relacionados
     const relResponse = await getProductos({
       coleccion: producto.value.coleccion,
       categoria: producto.value.categoria
@@ -153,6 +158,7 @@ const cargarProducto = async (id) => {
 
 onMounted(() => cargarProducto(route.params.id))
 
+// Si cambia el id en la URL vuelve a cargar el nuevo producto
 watch(() => route.params.id, (nuevoId) => {
   if (nuevoId) cargarProducto(nuevoId)
 })
@@ -161,6 +167,7 @@ const irAProducto = (id) => {
   router.push(`/producto/${id}`)
 }
 
+// Marca o desmarca el producto como favorito y avisa al backend
 const toggleWishlist = async () => {
   try {
     const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
@@ -179,11 +186,13 @@ const toggleWishlist = async () => {
   }
 }
 
+// Agrega el producto al carrito con la talla elegida y muestra un aviso corto
 const agregarAlCarrito = () => {
   if (producto.value.tallas.length > 0 && !tallaSeleccionada.value) return
 
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
   const key = `${producto.value._id}-${tallaSeleccionada.value}`
+  // Uso id + talla como key, así una misma talla suma cantidad en vez de duplicarse
   const existente = carrito.find(item => item.key === key)
 
   if (existente) {

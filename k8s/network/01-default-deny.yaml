@@ -1,13 +1,17 @@
+# NetworkPolicy que bloquea por defecto todo el tráfico en el namespace default
+# Solo deja salir DNS; lo demás se habilita con las otras policies
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-all
   namespace: default
 spec:
+  # Un selector vacío aplica a todos los pods del namespace
   podSelector: {}
   policyTypes:
     - Ingress
     - Egress
+  # Permite salida al puerto 53 para que los pods puedan resolver nombres
   egress:
     - ports:
         - protocol: UDP

@@ -1,15 +1,19 @@
+# NetworkPolicy con la salida permitida para el backend
+# Lo deja salir hacia MongoDB en el 27017 y hacia DNS en el 53
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-backend-egress
   namespace: default
 spec:
+  # Aplica a los pods del backend
   podSelector:
     matchLabels:
       app: capishop-backend
   policyTypes:
     - Egress
   egress:
+    # Salida hacia los pods de mongodb en el puerto 27017
     - to:
         - podSelector:
             matchLabels:
@@ -17,6 +21,7 @@ spec:
       ports:
         - protocol: TCP
           port: 27017
+    # Salida de DNS para resolver nombres
     - ports:
         - protocol: UDP
           port: 53

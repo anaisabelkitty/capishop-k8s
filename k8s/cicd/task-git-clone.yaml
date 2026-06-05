@@ -19,6 +19,7 @@ spec:
   workspaces:
     - name: source
       description: Workspace donde se clona el repositorio
+  # Clona el repo en el workspace y se cambia al branch indicado
   steps:
     - name: clone
       image: alpine/git:latest

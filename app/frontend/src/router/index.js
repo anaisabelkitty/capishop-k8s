@@ -9,26 +9,31 @@ import Wishlist from '../views/Wishlist.vue'
 import Checkout from '../views/Checkout.vue'
 
 const routes = [
+  // Página de inicio con el banner y los productos destacados
   {
     path: '/',
     name: 'home',
     component: Home
   },
+  // Catálogo completo con los filtros de búsqueda
   {
     path: '/catalogo',
     name: 'catalogo',
     component: Catalogo
   },
+  // Detalle de un producto, el :id viene en la URL
   {
     path: '/producto/:id',
     name: 'producto',
     component: Producto
   },
+  // Lista de favoritos del usuario
   {
     path: '/wishlist',
     name: 'wishlist',
     component: Wishlist
   },
+  // Carrito y confirmación del pedido
   {
     path: '/checkout',
     name: 'checkout',

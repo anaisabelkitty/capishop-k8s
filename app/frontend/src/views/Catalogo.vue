@@ -6,6 +6,7 @@
     <h1>Catálogo</h1>
 
     <div class="catalogo-contenido">
+      <!-- Panel lateral con los filtros de búsqueda -->
       <aside class="filtros">
         <h3>Filtros</h3>
 
@@ -60,6 +61,7 @@
         </button>
       </aside>
 
+      <!-- Zona donde se pintan los productos según los filtros -->
       <div class="productos-contenido">
         <div v-if="cargando" class="cargando">Cargando productos...</div>
         <div v-else-if="productos.length === 0" class="sin-resultados">
@@ -112,6 +114,7 @@ watch(() => route.query, async (query) => {
   }
 })
 
+// Pide al backend los productos que cumplan con los filtros activos
 const filtrar = async () => {
   cargando.value = true
   try {
@@ -129,6 +132,7 @@ const filtrar = async () => {
   }
 }
 
+// Deja los filtros vacíos y vuelve a cargar todo el catálogo
 const limpiarFiltros = async () => {
   filtros.value = { coleccion: '', categoria: '', talla: '' }
   await filtrar()

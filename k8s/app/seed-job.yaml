@@ -23,7 +23,9 @@ spec:
         - name: seed
           image: isabelkitty/capishop-backend:latest
           imagePullPolicy: Always
+          # Corre el script seed.js que llena la base con los productos
           command: ["node", "scripts/seed.js"]
+          # Le pasa la URL de Mongo para que el script sepa a dónde conectarse
           env:
             - name: MONGODB_URI
               value: "mongodb://mongodb.capishop.svc.cluster.local:27017/capishop"

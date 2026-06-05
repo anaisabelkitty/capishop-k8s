@@ -1,3 +1,5 @@
+# Deployment de Prometheus, el servidor que recoge y guarda las métricas
+# Monta la configuración del ConfigMap y los datos en el PVC
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,13 +17,16 @@ spec:
       labels:
         app: prometheus
     spec:
+      # Usa la service account con los permisos RBAC para leer el cluster
       serviceAccountName: prometheus
+      # Corre como root para poder escribir en el volumen de datos
       securityContext:
         runAsUser: 0
         fsGroup: 0
       containers:
         - name: prometheus
           image: prom/prometheus:v2.49.0
+          # Le indica el archivo de config, dónde guarda datos y cuánto los retiene
           args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --storage.tsdb.path=/prometheus
@@ -35,11 +40,13 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+          # Monta la config (solo lectura) y el disco de datos
           volumeMounts:
             - name: config
               mountPath: /etc/prometheus
             - name: storage
               mountPath: /prometheus
+      # El volumen config viene del ConfigMap y storage del PVC
       volumes:
         - name: config
           configMap:

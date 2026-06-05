@@ -1,3 +1,5 @@
+# ClusterIssuer de cert-manager que emite certificados autofirmados
+# Lo usa el Ingress para tener HTTPS dentro del cluster sin una CA externa
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:

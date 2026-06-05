@@ -1,3 +1,5 @@
+# Service headless de MongoDB
+# El clusterIP None le da DNS propio a cada pod, así arma el replica set
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,6 +9,7 @@ metadata:
     app: mongodb
 spec:
   clusterIP: None
+  # Conecta con los pods que tengan la etiqueta app: mongodb
   selector:
     app: mongodb
   ports:

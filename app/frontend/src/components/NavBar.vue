@@ -1,11 +1,14 @@
 <!-- Barra de navegación de CapiShop -->
+<!-- Se queda fija arriba y tiene el logo más los enlaces a cada sección -->
 <template>
   <nav class="navbar">
     <div class="navbar-contenido">
+      <!-- El logo siempre lleva al inicio -->
       <router-link to="/" class="logo">
         <img src="/images/logo-capishop.png" alt="CapiShop" class="logo-img" />
         <span><span class="logo-capi">Capi</span><span class="logo-shop">Shop</span></span>
       </router-link>
+      <!-- Enlaces a las vistas principales de la tienda -->
       <div class="nav-links">
         <router-link to="/">Inicio</router-link>
         <router-link to="/catalogo">Catálogo</router-link>
@@ -24,6 +27,7 @@
 </script>
 
 <style scoped>
+/* Estilos de la barra: fondo blanco, fija arriba y con sombra ligera */
 .navbar {
   background-color: #ffffff;
   border-bottom: 2px solid #f0f0f0;

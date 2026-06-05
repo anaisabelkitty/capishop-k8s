@@ -22,6 +22,7 @@ spec:
   workspaces:
     - name: source
       description: Workspace con el código fuente clonado
+  # Kaniko construye la imagen desde el Dockerfile y la sube al destino
   steps:
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:v1.19.0
@@ -37,6 +38,7 @@ spec:
       volumeMounts:
         - name: docker-config
           mountPath: /kaniko/.docker
+  # Las credenciales de Docker Hub vienen de un secret para poder hacer push
   volumes:
     - name: docker-config
       secret:

@@ -1,3 +1,5 @@
+# Deployment de Loki, donde se juntan y guardan todos los logs del cluster
+# Monta su config del ConfigMap y los logs en el PVC
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,12 +17,14 @@ spec:
       labels:
         app: loki
     spec:
+      # Corre como root para poder escribir en el volumen
       securityContext:
         runAsUser: 0
         fsGroup: 0
       containers:
         - name: loki
           image: grafana/loki:2.9.4
+          # Le indica el archivo de configuración a usar
           args:
             - -config.file=/etc/loki/loki.yaml
           ports:
@@ -32,11 +36,13 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "300m"
+          # Monta la config y el disco donde guarda los logs
           volumeMounts:
             - name: config
               mountPath: /etc/loki
             - name: storage
               mountPath: /loki
+      # config viene del ConfigMap y storage del PVC
       volumes:
         - name: config
           configMap:

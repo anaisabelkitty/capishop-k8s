@@ -1,6 +1,8 @@
 <!-- Vista principal de CapiShop -->
+<!-- Tiene el banner, las colecciones por tipo de mascota y los productos destacados -->
 <template>
   <div class="home">
+    <!-- Banner de bienvenida con botón al catálogo -->
     <section class="banner">
       <div class="banner-contenido">
         <h1>Bienvenido a CapiShop</h1>
@@ -14,6 +16,7 @@
       </div>
     </section>
 
+    <!-- Tarjetas de colección; al hacer clic filtra el catálogo por ese animal -->
     <section class="colecciones">
       <h2>¿Quién es tu mejor amigo?</h2>
       <div class="colecciones-grid">
@@ -63,12 +66,14 @@ const colecciones = [
   { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos', color: '#D6F5D6' }
 ]
 
+// Al cargar trae unos cuantos productos de cada colección para los destacados
 onMounted(async () => {
   try {
     const coleccionesNombres = ['perros', 'gatos', 'roedores', 'aves', 'acuaticos', 'exoticos']
     const resultados = await Promise.all(
       coleccionesNombres.map(c => getProductos({ coleccion: c }))
     )
+    // Toma los 2 primeros de cada colección y los junta en una sola lista
     productosDestacados.value = resultados.flatMap(r => r.data.slice(0, 2))
   } catch (error) {
     console.error('Error al cargar productos:', error)
@@ -77,6 +82,7 @@ onMounted(async () => {
   }
 })
 
+// Manda al catálogo ya filtrado por la colección elegida
 const irAColeccion = (coleccion) => {
   router.push({ path: '/catalogo', query: { coleccion } })
 }

@@ -22,6 +22,7 @@ spec:
       value: "isabelkitty/capishop-frontend:latest"
   workspaces:
     - name: shared-source
+      # Disco temporal que comparten las tasks para pasarse el código clonado
       volumeClaimTemplate:
         spec:
           accessModes:

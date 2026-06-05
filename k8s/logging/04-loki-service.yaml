@@ -1,3 +1,5 @@
+# Service interno (ClusterIP) de Loki
+# Por aquí Promtail le manda los logs y Grafana los consulta, en el 3100
 apiVersion: v1
 kind: Service
 metadata:

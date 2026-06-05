@@ -1,3 +1,5 @@
+# Permisos (RBAC) que necesita Prometheus para descubrir y leer el cluster
+# Crea la service account, el ClusterRole de solo lectura y los une con el binding
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -8,6 +10,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
+# Solo lectura (get, list, watch) sobre nodos, servicios, pods y métricas
 rules:
   - apiGroups: [""]
     resources:
@@ -28,6 +31,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
+# Enlaza el ClusterRole de arriba con la service account de Prometheus
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

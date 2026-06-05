@@ -1,14 +1,18 @@
+# NetworkPolicy que deja al frontend hablar con el backend
+# Abre la entrada al backend solo desde los pods del frontend en el puerto 3000
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-frontend-to-backend
   namespace: default
 spec:
+  # Esta regla aplica a los pods del backend
   podSelector:
     matchLabels:
       app: capishop-backend
   policyTypes:
     - Ingress
+  # Solo acepta tráfico que venga del frontend hacia el puerto 3000
   ingress:
     - from:
         - podSelector:

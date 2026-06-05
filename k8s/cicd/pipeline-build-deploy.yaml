@@ -27,6 +27,7 @@ spec:
     - name: shared-source
       description: Workspace compartido entre las tasks
   tasks:
+    # Primero clona el repositorio en el workspace compartido
     - name: clone
       taskRef:
         name: git-clone
@@ -39,6 +40,7 @@ spec:
         - name: source
           workspace: shared-source
 
+    # Construye la imagen del backend (corre después del clone)
     - name: build-backend
       taskRef:
         name: build-push
@@ -55,6 +57,7 @@ spec:
         - name: source
           workspace: shared-source
 
+    # Construye la imagen del frontend (también después del clone)
     - name: build-frontend
       taskRef:
         name: build-push

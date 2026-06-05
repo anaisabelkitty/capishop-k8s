@@ -1,3 +1,5 @@
+# PVC donde Grafana guarda sus dashboards y configuración
+# Pide 2Gi usando la StorageClass de NFS
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

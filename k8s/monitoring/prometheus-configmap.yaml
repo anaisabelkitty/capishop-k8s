@@ -1,3 +1,5 @@
+# ConfigMap con la configuración de Prometheus
+# Aquí se define cada cuánto scrapea y qué objetivos (targets) monitorea
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,15 +9,19 @@ metadata:
     app: prometheus
 data:
   prometheus.yml: |
+    # Cada cuánto recoge métricas y evalúa reglas
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
 
+    # Lista de objetivos de los que Prometheus saca métricas
     scrape_configs:
+      # El propio Prometheus
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
 
+      # Métricas de los 3 nodos vía node-exporter
       - job_name: 'node-exporter'
         static_configs:
           - targets:
@@ -23,10 +29,12 @@ data:
               - '192.168.224.136:9100'
               - '192.168.224.137:9100'
 
+      # Métricas del estado de los objetos de Kubernetes
       - job_name: 'kube-state-metrics'
         static_configs:
           - targets: ['kube-state-metrics.monitoring.svc:8080']
 
+      # Métricas del API server, usando el token de la service account
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
           - role: endpoints
@@ -40,6 +48,7 @@ data:
             action: keep
             regex: default;kubernetes;https
 
+      # Métricas de los nodos descubiertos automáticamente
       - job_name: 'kubernetes-nodes'
         kubernetes_sd_configs:
           - role: node

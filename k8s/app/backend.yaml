@@ -27,6 +27,8 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          # Variables de entorno: el puerto, la conexión al replica set de Mongo
+          # y el webhook de Slack que se lee desde un secret
           env:
             - name: PORT
               value: "3000"
@@ -37,12 +39,14 @@ spec:
                 secretKeyRef:
                   name: slack-secret
                   key: SLACK_WEBHOOK_URL
+          # Liveness reinicia el pod si /health deja de responder
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
+          # Readiness no manda tráfico al pod hasta que /health responde
           readinessProbe:
             httpGet:
               path: /health
@@ -73,5 +77,6 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
+      # Puerto fijo del nodo (30081) por el que se entra al backend desde fuera
       nodePort: 30081
       name: http

@@ -1,3 +1,5 @@
+# DaemonSet de Promtail: corre un pod en cada nodo
+# Lee los logs de los contenedores del host y se los manda a Loki
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -14,7 +16,9 @@ spec:
       labels:
         app: promtail
     spec:
+      # Usa la service account con permisos para descubrir pods
       serviceAccountName: promtail
+      # Tolerancia para correr también en el nodo master
       tolerations:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
@@ -22,8 +26,10 @@ spec:
       containers:
         - name: promtail
           image: grafana/promtail:2.9.4
+          # Le indica el archivo de configuración a usar
           args:
             - -config.file=/etc/promtail/promtail.yaml
+          # Toma el nombre del nodo para etiquetar los logs
           env:
             - name: HOSTNAME
               valueFrom:
@@ -38,6 +44,7 @@ spec:
             limits:
               memory: "192Mi"
               cpu: "200m"
+          # Monta la config y los logs del host (/var/log) en solo lectura
           volumeMounts:
             - name: config
               mountPath: /etc/promtail
@@ -46,6 +53,7 @@ spec:
               readOnly: true
             - name: run
               mountPath: /run/promtail
+      # config viene del ConfigMap; varlog y run apuntan a carpetas del nodo
       volumes:
         - name: config
           configMap:

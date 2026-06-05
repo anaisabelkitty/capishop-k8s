@@ -1,3 +1,5 @@
+# StatefulSet de MongoDB con replica set de 3 nodos y autenticación
+# Cada nodo tiene su propio disco y arranca con usuario root y keyfile
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -6,6 +8,7 @@ metadata:
   labels:
     app: mongodb
 spec:
+  # Se apoya en el service headless y levanta 3 réplicas con nombre fijo
   serviceName: mongodb
   replicas: 3
   selector:
@@ -19,6 +22,7 @@ spec:
       containers:
         - name: mongodb
           image: mongo:7.0
+          # Arranca Mongo en replica set rs0, con auth y la llave compartida
           command:
             - mongod
             - --replSet
@@ -29,6 +33,7 @@ spec:
             - /etc/mongodb/keyfile
           ports:
             - containerPort: 27017
+          # Usuario root y su contraseña, que se lee del secret
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: "admin"
@@ -44,12 +49,14 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+          # Monta el disco de datos y la llave del replica set (solo lectura)
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
             - name: keyfile
               mountPath: /etc/mongodb
               readOnly: true
+      # Toma la llave desde el secret y la deja con permisos 0400 como pide Mongo
       volumes:
         - name: keyfile
           secret:
@@ -58,6 +65,7 @@ spec:
               - key: mongodb-replica-set-key
                 path: keyfile
             defaultMode: 0400
+  # Cada réplica pide su propio disco de 5Gi usando la StorageClass de NFS
   volumeClaimTemplates:
     - metadata:
         name: mongodb-data

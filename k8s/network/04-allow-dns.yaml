@@ -1,12 +1,16 @@
+# NetworkPolicy que permite la salida de DNS a todos los pods
+# Hace falta porque el default-deny corta el egress, así que aquí se reabre el 53
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-dns
   namespace: default
 spec:
+  # Aplica a todos los pods del namespace
   podSelector: {}
   policyTypes:
     - Egress
+  # Deja salir consultas DNS por UDP y TCP en el puerto 53
   egress:
     - ports:
         - protocol: UDP

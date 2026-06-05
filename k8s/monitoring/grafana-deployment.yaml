@@ -1,3 +1,5 @@
+# Deployment de Grafana, el panel donde se ven las gráficas de las métricas
+# Lee los datos de Prometheus y guarda su config en el PVC
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,6 +17,7 @@ spec:
       labels:
         app: grafana
     spec:
+      # Corre como root para poder escribir en el volumen
       securityContext:
         runAsUser: 0
         fsGroup: 0
@@ -23,6 +26,7 @@ spec:
           image: grafana/grafana:10.2.3
           ports:
             - containerPort: 3000
+          # Contraseña del admin y ruta donde busca el provisioning
           env:
             - name: GF_SECURITY_ADMIN_PASSWORD
               value: "admin123"
@@ -35,6 +39,7 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "300m"
+          # Monta el disco donde Grafana guarda dashboards y ajustes
           volumeMounts:
             - name: storage
               mountPath: /var/lib/grafana

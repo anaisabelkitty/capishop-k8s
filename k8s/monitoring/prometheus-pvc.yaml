@@ -1,3 +1,5 @@
+# PVC donde Prometheus guarda sus métricas para no perderlas al reiniciar
+# Pide 5Gi usando la StorageClass de NFS
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

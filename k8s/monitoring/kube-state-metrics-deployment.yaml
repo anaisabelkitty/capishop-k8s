@@ -1,3 +1,5 @@
+# kube-state-metrics expone el estado de los objetos de K8s como métricas
+# Deployment más su Service para que Prometheus lo scrapee
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,10 +17,12 @@ spec:
       labels:
         app: kube-state-metrics
     spec:
+      # Usa la service account con los permisos de solo lectura
       serviceAccountName: kube-state-metrics
       containers:
         - name: kube-state-metrics
           image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.10.0
+          # 8080 expone las métricas y 8081 la telemetría del propio componente
           ports:
             - containerPort: 8080
             - containerPort: 8081
@@ -30,6 +34,7 @@ spec:
               memory: "256Mi"
               cpu: "200m"
 ---
+# Service interno para que Prometheus alcance las métricas en el 8080
 apiVersion: v1
 kind: Service
 metadata:

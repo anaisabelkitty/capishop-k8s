@@ -1,3 +1,5 @@
+# ConfigMap con la configuración de Loki
+# Define el puerto, dónde guarda los chunks y el esquema de los índices
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,9 +9,11 @@ data:
   loki.yaml: |
     auth_enabled: false
 
+    # Loki escucha en el puerto 3100
     server:
       http_listen_port: 3100
 
+    # Guarda los logs en el sistema de archivos (el PVC montado en /loki)
     common:
       path_prefix: /loki
       storage:
@@ -22,6 +26,7 @@ data:
         kvstore:
           store: inmemory
 
+    # Esquema de los índices de los logs
     schema_config:
       configs:
         - from: 2020-10-24

@@ -26,15 +26,18 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          # Le pasa al frontend la URL del backend dentro del cluster
           env:
             - name: VITE_API_URL
               value: "http://capishop-backend.capishop.svc.cluster.local:3000/api"
+          # Liveness reinicia el pod si la página deja de responder
           livenessProbe:
             httpGet:
               path: /
               port: 80
             initialDelaySeconds: 15
             periodSeconds: 10
+          # Readiness no manda tráfico al pod hasta que Nginx responde
           readinessProbe:
             httpGet:
               path: /

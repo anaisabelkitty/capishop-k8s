@@ -1,3 +1,5 @@
+# DaemonSet de node-exporter: corre un pod en cada nodo
+# Saca métricas del sistema (CPU, memoria, disco) y las expone en el 9100
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -14,15 +16,18 @@ spec:
       labels:
         app: node-exporter
     spec:
+      # Esta tolerancia permite que también corra en el nodo master
       tolerations:
         - key: node-role.kubernetes.io/control-plane
           operator: Exists
           effect: NoSchedule
+      # Usa la red y los procesos del host para leer sus métricas reales
       hostNetwork: true
       hostPID: true
       containers:
         - name: node-exporter
           image: prom/node-exporter:v1.7.0
+          # Le dice dónde leer los datos del host y qué montajes ignorar
           args:
             - --path.procfs=/host/proc
             - --path.sysfs=/host/sys
@@ -37,6 +42,7 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "200m"
+          # Monta /proc y /sys del host en solo lectura para leer las métricas
           volumeMounts:
             - name: proc
               mountPath: /host/proc
@@ -44,6 +50,7 @@ spec:
             - name: sys
               mountPath: /host/sys
               readOnly: true
+      # Estos volúmenes apuntan directo a las carpetas del nodo
       volumes:
         - name: proc
           hostPath:

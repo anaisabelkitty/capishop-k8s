@@ -1,3 +1,5 @@
+# Rollout de Argo Rollouts para el backend con despliegue canary
+# Va mandando el tráfico poco a poco a la versión nueva para probarla sin riesgo
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
@@ -20,6 +22,7 @@ spec:
           image: isabelkitty/capishop-backend:latest
           ports:
             - containerPort: 3000
+          # Toma las variables de entorno de un ConfigMap aparte
           envFrom:
             - configMapRef:
                 name: backend-config
@@ -30,6 +33,7 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "300m"
+  # Estrategia canary: sube el tráfico a 10%, 50% y 100% con pausas de 30s
   strategy:
     canary:
       steps:

@@ -11,6 +11,7 @@ const { Producto } = require('./productos');
 // Webhook de Slack para alertas
 const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
+// Arma el mensaje en JSON y lo manda al webhook de Slack por una petición HTTPS
 const enviarAlertaSlack = (mensaje) => {
   const payload = JSON.stringify({ text: mensaje });
   const url = new URL(SLACK_WEBHOOK);
@@ -51,6 +52,7 @@ const Pedido = mongoose.model('Pedido', pedidoSchema);
 
 // POST /api/checkout — procesar pedido y descontar stock
 router.post('/', async (req, res) => {
+  // Uso una transacción para que, si algo falla, no se descuente stock a medias
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -58,6 +60,7 @@ router.post('/', async (req, res) => {
     const { sessionId, productos } = req.body;
     let total = 0;
 
+    // Recorro cada producto del carrito para revisar el stock antes de descontarlo
     for (const item of productos) {
       const producto = await Producto.findById(item.productoId).session(session);
 

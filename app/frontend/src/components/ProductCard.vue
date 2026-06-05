@@ -1,6 +1,8 @@
 <!-- Tarjeta de producto para el catálogo -->
+<!-- Muestra imagen, nombre, precio y botones de wishlist y carrito -->
 <template>
   <div class="producto-card">
+    <!-- Al hacer clic en la imagen o el nombre se abre el detalle -->
     <div class="imagen-contenedor" @click="verProducto">
       <img
         :src="`/images/productos/${producto.imagenes[0]}`"
@@ -13,6 +15,7 @@
       <p class="producto-coleccion">{{ producto.coleccion }}</p>
       <p class="producto-precio">${{ producto.precio.toLocaleString() }} MXN</p>
       <div class="producto-acciones">
+        <!-- Corazón lleno o vacío según si ya está en la wishlist -->
         <button
           class="btn-wishlist"
           @click="toggleWishlist"
@@ -20,6 +23,7 @@
         >
           {{ enWishlist ? '❤️' : '🤍' }}
         </button>
+        <!-- Si no hay stock se deshabilita; si tiene tallas manda al detalle -->
         <button
           class="btn-carrito"
           @click="manejarAgregar"
@@ -47,6 +51,7 @@ const props = defineProps({
 const emit = defineEmits(['agregado-carrito'])
 const router = useRouter()
 
+// Saca el id de sesión del localStorage y, si no existe, crea uno nuevo
 const sessionId = localStorage.getItem('sessionId') || (() => {
   const id = Math.random().toString(36).substring(2)
   localStorage.setItem('sessionId', id)
@@ -55,15 +60,18 @@ const sessionId = localStorage.getItem('sessionId') || (() => {
 
 const enWishlist = ref(false)
 
+// Al cargar revisa si este producto ya estaba marcado como favorito
 onMounted(() => {
   const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
   enWishlist.value = wishlistLocal.includes(props.producto._id)
 })
 
+// Abre la vista de detalle del producto
 const verProducto = () => {
   router.push(`/producto/${props.producto._id}`)
 }
 
+// Agrega el producto al carrito; si tiene tallas mejor manda al detalle a elegir
 const manejarAgregar = () => {
   if (props.producto.tallas.length > 0) {
     router.push(`/producto/${props.producto._id}`)
@@ -71,6 +79,7 @@ const manejarAgregar = () => {
   }
   const carrito = JSON.parse(localStorage.getItem('carrito') || '[]')
   const key = `${props.producto._id}-`
+  // Si el producto ya estaba en el carrito solo le sumo uno
   const existente = carrito.find(item => item.key === key)
   if (existente) {
     existente.cantidad += 1
@@ -90,6 +99,7 @@ const manejarAgregar = () => {
   alert(`${props.producto.nombre} agregado al carrito`)
 }
 
+// Marca o desmarca el producto como favorito y avisa al backend
 const toggleWishlist = async () => {
   try {
     const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
@@ -110,6 +120,7 @@ const toggleWishlist = async () => {
 </script>
 
 <style scoped>
+/* Estilos de la tarjeta: bordes redondeados y un pequeño efecto al pasar el mouse */
 .producto-card {
   background: white;
   border-radius: 12px;

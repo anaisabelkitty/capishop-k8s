@@ -1,5 +1,8 @@
 # MongoDB Replica Set de 3 nodos para CapiShop
 # StatefulSet con headless service para comunicación entre nodos
+
+# Service headless (clusterIP None): le da un DNS fijo a cada nodo de Mongo
+# así los nodos del replica set se encuentran entre sí
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,12 +12,14 @@ metadata:
     app: mongodb
 spec:
   clusterIP: None
+  # Apunta a los pods que tengan la etiqueta app: mongodb
   selector:
     app: mongodb
   ports:
     - port: 27017
       name: mongodb
 ---
+# Service normal: por aquí se conectan los demás pods a Mongo
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,6 +41,7 @@ metadata:
   name: mongodb
   namespace: capishop
 spec:
+  # Usa el service headless y levanta 3 réplicas con nombre fijo (mongodb-0, 1, 2)
   serviceName: mongodb-headless
   replicas: 3
   selector:
@@ -49,6 +55,7 @@ spec:
       containers:
         - name: mongodb
           image: mongo:6.0
+          # Arranca mongod en modo replica set rs0 y escuchando en todas las IPs
           command:
             - mongod
             - --replSet
@@ -56,9 +63,11 @@ spec:
             - --bind_ip_all
           ports:
             - containerPort: 27017
+          # Monta el volumen de datos para que la info no se pierda al reiniciar
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
+          # Hace ping a la base para marcar el pod como listo solo cuando responde
           readinessProbe:
             exec:
               command:
@@ -76,6 +85,7 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+  # Crea un disco propio de 1Gi por cada réplica usando la StorageClass de NFS
   volumeClaimTemplates:
     - metadata:
         name: mongodb-data

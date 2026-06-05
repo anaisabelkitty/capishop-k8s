@@ -1,3 +1,5 @@
+# Permisos (RBAC) para kube-state-metrics
+# Le dan acceso de solo lectura a los objetos del cluster para sacar sus métricas
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -8,6 +10,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kube-state-metrics
+# Solo list y watch sobre muchos tipos de objetos para leer su estado
 rules:
   - apiGroups: [""]
     resources:
@@ -49,6 +52,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: kube-state-metrics
+# Enlaza el ClusterRole con la service account de kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

@@ -1,5 +1,5 @@
 # Etapa 1: construcción de la aplicación Vue
-# Usa Node.js 18 para compilar el proyecto con Vite
+# Usa Node.js 20 para compilar el proyecto con Vite
 FROM node:20-slim AS build
 
 WORKDIR /app

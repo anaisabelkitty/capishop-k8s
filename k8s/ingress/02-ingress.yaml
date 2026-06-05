@@ -1,12 +1,16 @@
+# Ingress que expone CapiShop en el host capishop.local con HTTPS
+# Manda /api al backend y el resto de rutas al frontend
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capishop-ingress
   namespace: capishop
+  # Usa el controlador nginx y pide el certificado al ClusterIssuer autofirmado
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: selfsigned-issuer
 spec:
+  # Activa TLS para capishop.local y guarda el certificado en este secret
   tls:
     - hosts:
         - capishop.local
@@ -15,6 +19,7 @@ spec:
     - host: capishop.local
       http:
         paths:
+          # Las llamadas a /api van al service del backend
           - path: /api
             pathType: Prefix
             backend:
@@ -22,6 +27,7 @@ spec:
                 name: capishop-backend
                 port:
                   number: 3000
+          # Todo lo demás va al frontend
           - path: /
             pathType: Prefix
             backend:

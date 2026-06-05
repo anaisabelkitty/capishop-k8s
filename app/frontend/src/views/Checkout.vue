@@ -1,8 +1,10 @@
 <!-- Vista de checkout de CapiShop -->
+<!-- Muestra el carrito guardado y, al confirmar, manda el pedido al backend -->
 <template>
   <div class="checkout">
     <h1>🛒 Mi Carrito</h1>
 
+    <!-- Si no hay nada en el carrito muestra un aviso y un botón al catálogo -->
     <div v-if="carrito.length === 0" class="vacio">
       <p>Tu carrito está vacío.</p>
       <router-link to="/catalogo" class="btn-ir-catalogo">
@@ -39,6 +41,7 @@
         </div>
       </div>
 
+      <!-- Cuadro lateral con el resumen y el botón de confirmar -->
       <div class="resumen">
         <h2>Resumen del pedido</h2>
         <div class="resumen-linea">
@@ -84,14 +87,17 @@ const sessionId = localStorage.getItem('sessionId') || (() => {
   return id
 })()
 
+// Al abrir la vista carga el carrito que estaba guardado en localStorage
 onMounted(() => {
   carrito.value = JSON.parse(localStorage.getItem('carrito') || '[]')
 })
 
+// Suma el precio por cantidad de cada item para sacar el total
 const total = computed(() => {
   return carrito.value.reduce((acc, item) => acc + item.precio * item.cantidad, 0)
 })
 
+// Sube o baja la cantidad de un item; si llega a cero lo quita del carrito
 const cambiarCantidad = (item, delta) => {
   const nueva = item.cantidad + delta
   if (nueva <= 0) {
@@ -102,11 +108,13 @@ const cambiarCantidad = (item, delta) => {
   localStorage.setItem('carrito', JSON.stringify(carrito.value))
 }
 
+// Quita un item del carrito y guarda el cambio
 const eliminarItem = (item) => {
   carrito.value = carrito.value.filter(i => (i.key || i.productoId) !== (item.key || item.productoId))
   localStorage.setItem('carrito', JSON.stringify(carrito.value))
 }
 
+// Revisa el stock de cada producto y, si todo está bien, confirma el pedido
 const confirmarPedido = async () => {
   procesando.value = true
   error.value = ''

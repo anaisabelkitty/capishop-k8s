@@ -1,9 +1,12 @@
+# ResourceQuota que limita el consumo del namespace monitoring
+# Mismos topes que capishop para que Prometheus y Grafana no acaparen el cluster
 apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: monitoring-quota
   namespace: monitoring
 spec:
+  # Topes duros para todo el namespace de monitoreo
   hard:
     requests.cpu: "2"
     requests.memory: "2Gi"

@@ -1,4 +1,5 @@
 // Script para cargar los productos iniciales en MongoDB
+// Lo corro una sola vez para llenar la base, así la tienda ya arranca con productos
 require('dotenv').config();
 const mongoose = require('mongoose');
 const { Producto } = require('../src/routes/productos');
@@ -696,6 +697,7 @@ const productos = [
   }
 ];
 
+// Se conecta a MongoDB, borra los productos viejos y luego inserta la lista de arriba
 const cargarProductos = async () => {
   try {
     const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/capishop';

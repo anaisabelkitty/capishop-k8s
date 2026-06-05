@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const conectarDB = async () => {
   const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/capishop';
+  // Intenta conectarse y, si falla, vuelve a reintentar cada 5 segundos
   const intentarConexion = async () => {
     try {
       await mongoose.connect(uri);
