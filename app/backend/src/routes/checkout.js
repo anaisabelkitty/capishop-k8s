@@ -70,14 +70,18 @@ router.post('/', async (req, res) => {
 
       // Descuenta el stock total y stockPorTalla atómicamente
       const updateQuery = { $inc: { stock: -item.cantidad } };
-      if (item.talla && producto.stockPorTalla) {
+      if (item.talla && producto.stockPorTalla && producto.stockPorTalla.get(item.talla) != null) {
         updateQuery.$inc[`stockPorTalla.${item.talla}`] = -item.cantidad;
       }
       if (producto.stock - item.cantidad === 0) {
         updateQuery.$set = { disponible: false };
       }
 
-      await Producto.findByIdAndUpdate(item.productoId, updateQuery, { session });
+      await Producto.collection.updateOne(
+        { _id: producto._id },
+        updateQuery,
+        { session }
+      );
 
       total += producto.precio * item.cantidad;
     }
