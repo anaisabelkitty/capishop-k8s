@@ -57,8 +57,11 @@ router.post('/', async (req, res) => {
       }
 
       // Verifica stock por talla si aplica
-      if (item.talla && producto.stockPorTalla) {
-        const stockTalla = producto.stockPorTalla.get(item.talla) || 0;
+      if (item.talla && producto.tallas && producto.tallas.length > 0) {
+        const stockMap = producto.stockPorTalla instanceof Map
+          ? Object.fromEntries(producto.stockPorTalla)
+          : producto.stockPorTalla || {};
+        const stockTalla = stockMap[item.talla] || 0;
         if (stockTalla < item.cantidad) {
           await session.abortTransaction();
           return res.status(400).json({
@@ -70,7 +73,7 @@ router.post('/', async (req, res) => {
 
       // Descuenta el stock total y stockPorTalla atómicamente
       const updateQuery = { $inc: { stock: -item.cantidad } };
-      if (item.talla && producto.stockPorTalla && producto.stockPorTalla.get(item.talla) != null) {
+      if (item.talla && producto.tallas && producto.tallas.length > 0) {
         updateQuery.$inc[`stockPorTalla.${item.talla}`] = -item.cantidad;
       }
       if (producto.stock - item.cantidad === 0) {
