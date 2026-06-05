@@ -4,13 +4,14 @@
 
 import axios from 'axios'
 
-const protocol = window.location.protocol
 const hostname = window.location.hostname
+const protocol = window.location.protocol
+const port = window.location.port
 
 const api = axios.create({
   baseURL: hostname === 'localhost'
     ? 'http://localhost:3000/api'
-    : `${protocol}//${hostname}:30081/api`
+    : `${protocol}//${hostname}${port ? ':' + port : ''}/api`
 })
 
 // Productos
