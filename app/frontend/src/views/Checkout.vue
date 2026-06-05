@@ -129,6 +129,7 @@ const confirmarPedido = async () => {
     exito.value = true
     carrito.value = []
     localStorage.setItem('carrito', '[]')
+    localStorage.setItem('stockActualizado', Date.now().toString())
   } catch (err) {
     error.value = err.response?.data?.error || 'Error al procesar el pedido'
   } finally {

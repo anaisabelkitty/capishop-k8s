@@ -14,7 +14,7 @@ const productos = [
     tallas: ['XS', 'S', 'M', 'L', 'XL'],
     stockPorTalla: { XS: 8, S: 12, M: 15, L: 10, XL: 5 },
     colores: ['negro'],
-    imagenes: ['arnes-perro-1.png', 'arnes-perro-2.png'],
+    imagenes: ['arnes-perro-1.png'],
     stock: 50
   },
   {
@@ -26,7 +26,7 @@ const productos = [
     tallas: ['XS', 'S', 'M', 'L'],
     stockPorTalla: { XS: 10, S: 15, M: 12, L: 6 },
     colores: ['rosa'],
-    imagenes: ['arnes-perro-2.png', 'arnes-perro-1.png'],
+    imagenes: ['arnes-perro-2.png'],
     stock: 43
   },
   {
@@ -38,7 +38,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['azul marino'],
-    imagenes: ['correa-perro-1.png', 'correa-perro-2.png'],
+    imagenes: ['correa-perro-1.png'],
     stock: 15
   },
   {
@@ -50,7 +50,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['café'],
-    imagenes: ['correa-perro-2.png', 'correa-perro-1.png'],
+    imagenes: ['correa-perro-2.png'],
     stock: 12
   },
   {
@@ -62,7 +62,7 @@ const productos = [
     tallas: ['S', 'M', 'L'],
     stockPorTalla: { S: 8, M: 10, L: 6 },
     colores: ['gris'],
-    imagenes: ['cama-perro-1.png', 'cama-perro-2.png'],
+    imagenes: ['cama-perro-1.png'],
     stock: 24
   },
   {
@@ -74,7 +74,7 @@ const productos = [
     tallas: ['M', 'L', 'XL'],
     stockPorTalla: { M: 7, L: 9, XL: 5 },
     colores: ['beige'],
-    imagenes: ['cama-perro-2.png', 'cama-perro-1.png'],
+    imagenes: ['cama-perro-2.png'],
     stock: 21
   },
   {
@@ -158,7 +158,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: [],
-    imagenes: ['snack-perro-1.png', 'snack-perro-2.png'],
+    imagenes: ['snack-perro-1.png'],
     stock: 20
   },
   {
@@ -170,7 +170,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: [],
-    imagenes: ['snack-perro-2.png', 'snack-perro-1.png'],
+    imagenes: ['snack-perro-2.png'],
     stock: 18
   },
   {
@@ -231,7 +231,7 @@ const productos = [
     tallas: ['XS', 'S', 'M'],
     stockPorTalla: { XS: 9, S: 13, M: 7 },
     colores: ['lila'],
-    imagenes: ['arnes-gato-1.png', 'arnes-gato-2.png'],
+    imagenes: ['arnes-gato-1.png'],
     stock: 29
   },
   {
@@ -243,7 +243,7 @@ const productos = [
     tallas: ['XS', 'S', 'M'],
     stockPorTalla: { XS: 7, S: 11, M: 6 },
     colores: ['azul cielo'],
-    imagenes: ['arnes-gato-2.png', 'arnes-gato-1.png'],
+    imagenes: ['arnes-gato-2.png'],
     stock: 24
   },
   {
@@ -255,7 +255,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['naranja'],
-    imagenes: ['rascador-gato-1.png', 'rascador-gato-2.png'],
+    imagenes: ['rascador-gato-1.png'],
     stock: 8
   },
   {
@@ -267,7 +267,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['verde'],
-    imagenes: ['rascador-gato-2.png', 'rascador-gato-1.png'],
+    imagenes: ['rascador-gato-2.png'],
     stock: 12
   },
   {
@@ -303,7 +303,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: [],
-    imagenes: ['snack-gato-1.png', 'snack-gato-2.png'],
+    imagenes: ['snack-gato-1.png'],
     stock: 20
   },
   {
@@ -315,7 +315,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: [],
-    imagenes: ['snack-gato-2.png', 'snack-gato-1.png'],
+    imagenes: ['snack-gato-2.png'],
     stock: 18
   },
   {

@@ -92,14 +92,15 @@
 }
 
 .checkout-link {
-  background-color: #ede9fe;
-  color: #7c3aed !important;
+  background-color: white;
+  color: #555 !important;
   padding: 8px 16px;
   border-radius: 20px;
+  border: 2px solid #d4a017;
 }
 
 .checkout-link:hover {
-  background-color: #ddd6fe !important;
-  color: #7c3aed !important;
+  background-color: #fffdf5 !important;
+  color: #555 !important;
 }
 </style>
