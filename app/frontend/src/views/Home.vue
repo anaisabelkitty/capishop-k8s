@@ -5,7 +5,7 @@
     <!-- Banner de bienvenida con botón al catálogo -->
     <section class="banner">
       <div class="banner-contenido">
-        <h1>Bienvenido a CapiShop</h1>
+        <h1>Bienvenido a CapiShop PROYECTO DEVOPS</h1>
         <p>Todo lo necesario para una mascota feliz.</p>
         <router-link to="/catalogo" class="btn-ver-catalogo">
           Ver catálogo

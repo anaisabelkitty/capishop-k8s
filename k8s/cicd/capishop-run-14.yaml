@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: capishop-run-14
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: capishop-pipeline
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+  params:
+    - name: repo-url
+      value: https://github.com/anaisabelkitty/capishop-k8s.git
+    - name: revision
+      value: develop
