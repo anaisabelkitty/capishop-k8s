@@ -3,76 +3,101 @@
   <div class="producto-detalle">
     <div v-if="cargando" class="cargando">Cargando producto...</div>
     <div v-else-if="!producto" class="error">Producto no encontrado.</div>
-    <div v-else class="detalle-contenido">
-
-      <div class="imagenes-galeria">
-        <img
-          :src="`/images/productos/${imagenActiva}`"
-          :alt="producto.nombre"
-          class="imagen-principal"
-        />
-        <div class="miniaturas">
+    <div v-else>
+      <div class="detalle-contenido">
+        <div class="imagenes-galeria">
           <img
-            v-for="imagen in producto.imagenes"
-            :key="imagen"
-            :src="`/images/productos/${imagen}`"
+            :src="`/images/productos/${imagenActiva}`"
             :alt="producto.nombre"
-            class="miniatura"
-            :class="{ activa: imagenActiva === imagen }"
-            @click="imagenActiva = imagen"
+            class="imagen-principal"
           />
+          <div class="miniaturas">
+            <img
+              v-for="imagen in producto.imagenes"
+              :key="imagen"
+              :src="`/images/productos/${imagen}`"
+              :alt="producto.nombre"
+              class="miniatura"
+              :class="{ activa: imagenActiva === imagen }"
+              @click="imagenActiva = imagen"
+            />
+          </div>
+        </div>
+
+        <div class="producto-info">
+          <p class="coleccion-badge">{{ producto.coleccion }}</p>
+          <h1>{{ producto.nombre }}</h1>
+          <p class="precio">${{ producto.precio.toLocaleString() }} MXN</p>
+          <p class="descripcion">{{ producto.descripcion }}</p>
+
+          <div v-if="producto.tallas.length > 0" class="opciones">
+            <label>Talla</label>
+            <div class="tallas-grid">
+              <button
+                v-for="talla in producto.tallas"
+                :key="talla"
+                class="talla-btn"
+                :class="{ seleccionada: tallaSeleccionada === talla }"
+                @click="tallaSeleccionada = talla"
+              >
+                {{ talla }}
+              </button>
+            </div>
+            <p v-if="!tallaSeleccionada" class="aviso-talla">⚠️ Selecciona una talla</p>
+            <p v-else class="stock-info" :class="{ agotado: stockTallaActual === 0 }">
+              {{ stockTallaActual === 0 ? 'Agotado en esta talla' : `${stockTallaActual} disponibles en talla ${tallaSeleccionada}` }}
+            </p>
+          </div>
+
+          <p v-else class="stock-info" :class="{ agotado: producto.stock === 0 }">
+            {{ producto.stock === 0 ? 'Agotado' : `${producto.stock} disponibles` }}
+          </p>
+
+          <div v-if="producto.colores.length > 0" class="opciones">
+            <label>Color</label>
+            <p class="color-texto">{{ producto.colores.join(', ') }}</p>
+          </div>
+
+          <div class="acciones">
+            <button
+              class="btn-wishlist"
+              @click="toggleWishlist"
+              :class="{ activo: enWishlist }"
+            >
+              {{ enWishlist ? '❤️ En wishlist' : '🤍 Agregar a wishlist' }}
+            </button>
+            <button
+              class="btn-carrito"
+              @click="agregarAlCarrito"
+              :disabled="producto.stock === 0 || (producto.tallas.length > 0 && !tallaSeleccionada)"
+            >
+              🛒 Agregar al carrito
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="producto-info">
-        <p class="coleccion-badge">{{ producto.coleccion }}</p>
-        <h1>{{ producto.nombre }}</h1>
-        <p class="precio">${{ producto.precio.toLocaleString() }} MXN</p>
-        <p class="descripcion">{{ producto.descripcion }}</p>
-
-        <div v-if="producto.tallas.length > 0" class="opciones">
-          <label>Talla</label>
-          <div class="tallas-grid">
-            <button
-              v-for="talla in producto.tallas"
-              :key="talla"
-              class="talla-btn"
-              :class="{ seleccionada: tallaSeleccionada === talla }"
-              @click="tallaSeleccionada = talla"
-            >
-              {{ talla }}
-            </button>
+      <!-- Productos relacionados -->
+      <div v-if="relacionados.length > 0" class="relacionados">
+        <h2>También te puede interesar</h2>
+        <div class="relacionados-grid">
+          <div
+            v-for="rel in relacionados"
+            :key="rel._id"
+            class="relacionado-card"
+            @click="irAProducto(rel._id)"
+          >
+            <div class="relacionado-imagen">
+              <img
+                :src="`/images/productos/${rel.imagenes[0]}`"
+                :alt="rel.nombre"
+              />
+            </div>
+            <div class="relacionado-info">
+              <p class="relacionado-nombre">{{ rel.nombre }}</p>
+              <p class="relacionado-precio">${{ rel.precio.toLocaleString() }} MXN</p>
+            </div>
           </div>
-          <p v-if="!tallaSeleccionada" class="aviso-talla">⚠️ Selecciona una talla</p>
-          <p v-else class="stock-info" :class="{ agotado: stockTallaActual === 0 }">
-            {{ stockTallaActual === 0 ? 'Agotado en esta talla' : `${stockTallaActual} disponibles en talla ${tallaSeleccionada}` }}
-          </p>
-        </div>
-
-        <p v-else class="stock-info" :class="{ agotado: producto.stock === 0 }">
-          {{ producto.stock === 0 ? 'Agotado' : `${producto.stock} disponibles` }}
-        </p>
-
-        <div v-if="producto.colores.length > 0" class="opciones">
-          <label>Color</label>
-          <p class="color-texto">{{ producto.colores.join(', ') }}</p>
-        </div>
-
-        <div class="acciones">
-          <button
-            class="btn-wishlist"
-            @click="toggleWishlist"
-            :class="{ activo: enWishlist }"
-          >
-            {{ enWishlist ? '❤️ En wishlist' : '🤍 Agregar a wishlist' }}
-          </button>
-          <button
-            class="btn-carrito"
-            @click="agregarAlCarrito"
-            :disabled="producto.stock === 0 || (producto.tallas.length > 0 && !tallaSeleccionada)"
-          >
-            🛒 Agregar al carrito
-          </button>
         </div>
       </div>
     </div>
@@ -80,16 +105,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { getProducto, agregarWishlist, eliminarWishlist } from '../api'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { getProducto, getProductos, agregarWishlist, eliminarWishlist } from '../api'
 
 const route = useRoute()
+const router = useRouter()
 const producto = ref(null)
 const cargando = ref(true)
 const imagenActiva = ref('')
 const tallaSeleccionada = ref('')
 const enWishlist = ref(false)
+const relacionados = ref([])
 
 const stockTallaActual = computed(() => {
   if (!producto.value || !tallaSeleccionada.value) return 0
@@ -104,20 +131,42 @@ const sessionId = localStorage.getItem('sessionId') || (() => {
   return id
 })()
 
-onMounted(async () => {
+const cargarProducto = async (id) => {
+  cargando.value = true
+  tallaSeleccionada.value = ''
+  relacionados.value = []
   try {
-    const response = await getProducto(route.params.id)
+    const response = await getProducto(id)
     producto.value = response.data
     imagenActiva.value = producto.value.imagenes[0]
 
     const wishlistLocal = JSON.parse(localStorage.getItem('wishlist') || '[]')
     enWishlist.value = wishlistLocal.includes(producto.value._id)
+
+    // Cargar productos relacionados de la misma categoría
+    const relResponse = await getProductos({
+      coleccion: producto.value.coleccion,
+      categoria: producto.value.categoria
+    })
+    relacionados.value = relResponse.data
+      .filter(p => p._id !== producto.value._id)
+      .slice(0, 4)
   } catch (error) {
     console.error('Error al cargar producto:', error)
   } finally {
     cargando.value = false
   }
+}
+
+onMounted(() => cargarProducto(route.params.id))
+
+watch(() => route.params.id, (nuevoId) => {
+  if (nuevoId) cargarProducto(nuevoId)
 })
+
+const irAProducto = (id) => {
+  router.push(`/producto/${id}`)
+}
 
 const toggleWishlist = async () => {
   try {
@@ -336,5 +385,69 @@ h1 {
   text-align: center;
   padding: 60px;
   color: #888;
+}
+
+.relacionados {
+  margin-top: 50px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 30px;
+}
+
+.relacionados h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.relacionados-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.relacionado-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.relacionado-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.relacionado-imagen {
+  height: 160px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.relacionado-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.relacionado-info {
+  padding: 12px;
+}
+
+.relacionado-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.relacionado-precio {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #7c3aed;
 }
 </style>
