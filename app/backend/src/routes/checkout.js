@@ -14,7 +14,7 @@ const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 // Arma el mensaje en JSON y lo manda al webhook de Slack por una petición HTTPS
 const enviarAlertaSlack = (mensaje) => {
   const payload = JSON.stringify({ text: mensaje });
-  const url = new URL(SLACK_WEBHOOK);
+  const url = new URL(webhookUrl);
   const options = {
     hostname: url.hostname,
     path: url.pathname,
