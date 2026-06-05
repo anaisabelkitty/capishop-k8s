@@ -294,3 +294,437 @@ kubectl get networkpolicy -n default
 > mayoría protege `default`. Conviene revisarlo antes de la demo del pod intruso,
 > sobre todo porque, como dije en el PASO 1, las policies solo se hacen cumplir si
 > el cluster tiene Calico.
+
+## PASO 8 — Monitoreo Prometheus y Grafana
+
+La carpeta `monitoring/` arma el stack de métricas en el namespace `monitoring`:
+
+- Prometheus: Deployment con su ConfigMap, PVC de 5Gi y RBAC propio. Retiene 7
+  días de métricas. Scrapea cada 15s. Sus targets son los tres node-exporter
+  (9100), kube-state-metrics (8080), el API server y los nodos. Se expone en el
+  NodePort 30900.
+- node-exporter: DaemonSet, un pod por nodo, con tolerancia para correr también
+  en el master. Saca métricas del sistema en el 9100.
+- kube-state-metrics: Deployment más Service y RBAC. Expone el estado de los
+  objetos de Kubernetes en el 8080.
+- Grafana: Deployment con PVC de 2Gi. Se expone en el NodePort 30300. La
+  contraseña de admin se pone por variable de entorno.
+
+Aplicar todo el stack de monitoreo.
+
+```bash
+kubectl apply -f k8s/monitoring/
+```
+
+Ver que los pods de monitoreo están arriba. Se esperan prometheus, grafana,
+kube-state-metrics y un node-exporter por nodo.
+
+```bash
+kubectl get pods -n monitoring
+```
+
+Entrar a Prometheus en `http://192.168.224.135:30900` y a Grafana en
+`http://192.168.224.135:30300` (usuario admin, contraseña admin123).
+
+Estas son las consultas que uso en Prometheus. La primera muestra los contenedores
+corriendo en capishop.
+
+```promql
+kube_pod_container_status_running{namespace="capishop"}
+```
+
+Cuántas veces se han reiniciado los contenedores de capishop.
+
+```promql
+kube_pod_container_status_restarts_total{namespace="capishop"}
+```
+
+Uso de CPU de los nodos, sin contar el tiempo ocioso.
+
+```promql
+rate(node_cpu_seconds_total{mode!="idle"}[1m])
+```
+
+## PASO 9 — Logs Loki y Promtail
+
+La carpeta `logging/` arma el stack de logs, también en `monitoring`:
+
+- Loki: Deployment con su ConfigMap y PVC de 5Gi. Junta y guarda los logs.
+  Escucha en el 3100 por un Service ClusterIP interno.
+- Promtail: DaemonSet, un pod por nodo, con tolerancia para el master y su RBAC.
+  Lee los logs de los pods desde `/var/log`, los etiqueta con namespace, pod y
+  container, y se los manda a Loki en `http://loki.monitoring.svc:3100`.
+
+Aplicar el stack de logging.
+
+```bash
+kubectl apply -f k8s/logging/
+```
+
+Ver que Loki y los Promtail están arriba. Se espera un Loki y un Promtail por nodo.
+
+```bash
+kubectl get pods -n monitoring -l 'app in (loki, promtail)'
+```
+
+Loki se consulta desde Grafana agregándolo como fuente de datos
+(`http://loki.monitoring.svc:3100`). Esta es la query que uso para ver la alerta
+de stock bajo que imprime el backend.
+
+```logql
+{namespace="capishop"} |= "stock bajo"
+```
+
+## PASO 10 — CI/CD Tekton y ArgoCD
+
+La carpeta `cicd/` tiene el pipeline de Tekton y la Application de ArgoCD.
+
+Tekton (namespace `tekton-pipelines`):
+
+- `task-git-clone.yaml` — clona el repo en un workspace compartido.
+- `task-build-push.yaml` — construye una imagen con Kaniko y la sube a Docker Hub.
+  Las credenciales vienen del secret `docker-credentials`.
+- `pipeline-build-deploy.yaml` — encadena: primero clona, luego construye en
+  paralelo el backend y el frontend.
+- `pipelinerun.yaml` — lanza el pipeline apuntando al repo y rama `develop`.
+
+ArgoCD (namespace `argocd`):
+
+- `argocd-application.yaml` — define la Application `capishop`, que vigila la
+  carpeta `k8s/app` del repo en la rama `develop` y sincroniza sola con selfHeal y
+  prune activados.
+
+Crear el secret con las credenciales de Docker Hub que usa Kaniko para el push.
+
+```bash
+kubectl create secret docker-registry docker-credentials \
+  --docker-server=https://index.docker.io/v1/ \
+  --docker-username=isabelkitty \
+  --docker-password='<TOKEN_DE_DOCKER_HUB>' \
+  -n tekton-pipelines
+```
+
+Registrar las tasks y el pipeline.
+
+```bash
+kubectl apply -f k8s/cicd/task-git-clone.yaml
+kubectl apply -f k8s/cicd/task-build-push.yaml
+kubectl apply -f k8s/cicd/pipeline-build-deploy.yaml
+```
+
+Lanzar un PipelineRun. El sed cambia el nombre del run para que no choque con uno
+anterior; hay que sustituir la N por un número nuevo en cada ejecución.
+
+```bash
+sed 's/capishop-run-[0-9]*/capishop-run-N/' ~/capishop-k8s/k8s/cicd/pipelinerun.yaml | kubectl apply -f -
+```
+
+Seguir los logs del run en vivo. Debe terminar con el clone y los dos builds en
+verde.
+
+```bash
+tkn pipelinerun logs capishop-run-N -f -n tekton-pipelines
+```
+
+Registrar la Application en ArgoCD para que sincronice la app sola.
+
+```bash
+kubectl apply -f k8s/cicd/argocd-application.yaml
+```
+
+Ver el estado de la Application. Debe quedar Synced y Healthy.
+
+```bash
+kubectl get application -n argocd
+```
+
+ArgoCD también tiene su panel en `https://192.168.224.135:32214` (usuario admin).
+
+## PASO 11 — Canary Release con Argo Rollouts
+
+`canary/01-rollout-backend.yaml` define un Rollout de Argo Rollouts para el
+backend, en el namespace `capishop`, con 3 réplicas. La estrategia canary sube el
+tráfico a la versión nueva en pasos: 10%, pausa de 30s, 50%, pausa de 30s y 100%.
+El Rollout toma sus variables de un ConfigMap llamado `backend-config`.
+
+Aplicar el Rollout.
+
+```bash
+kubectl apply -f k8s/canary/01-rollout-backend.yaml
+```
+
+Ver el estado del Rollout en vivo. Muestra las réplicas y en qué paso del canary va.
+
+```bash
+kubectl argo rollouts get rollout capishop-backend-rollout -n capishop --watch
+```
+
+Escalar el Rollout a 3 réplicas.
+
+```bash
+kubectl scale rollout capishop-backend-rollout --replicas=3 -n capishop
+```
+
+Disparar una actualización canary cambiando la imagen del backend. A partir de
+aquí empieza el avance 10%, 50%, 100% con sus pausas.
+
+```bash
+kubectl argo rollouts set image capishop-backend-rollout backend=isabelkitty/capishop-backend:latest -n capishop
+```
+
+> Dos notas del Rollout. Primero: el `backend-config` que pide el Rollout con
+> `envFrom` no está como archivo en el repo, así que hay que crear ese ConfigMap
+> antes o los pods del Rollout no arrancarán. Segundo: el Rollout y el Deployment
+> del backend (PASO 5) comparten el selector `app: capishop-backend`, así que son
+> dos formas de manejar el mismo backend; para el canary se usa el Rollout en
+> lugar del Deployment, no los dos a la vez.
+
+## Demostraciones
+
+### DEMO 1 — Persistencia de datos
+
+Borrar el pod mongodb-0 y ver que, cuando vuelve, los datos siguen ahí porque
+están en el PVC de NFS.
+
+Borrar el pod. Kubernetes lo recrea solo por ser parte del StatefulSet.
+
+```bash
+kubectl delete pod mongodb-0 -n capishop
+```
+
+Cuando vuelva a Running, contar los productos. Debe seguir el mismo número que
+antes de borrarlo.
+
+```bash
+kubectl exec -it mongodb-0 -n capishop -- mongosh capishop --eval "db.productos.countDocuments()"
+```
+
+### DEMO 2 — Elección de primario
+
+Ver quién es el primario, borrarlo y comprobar que el replica set elige otro.
+
+Ver el estado actual. Anotar cuál sale como PRIMARY.
+
+```bash
+kubectl exec -it mongodb-0 -n capishop -- mongosh --eval "rs.status().members.map(m => ({name: m.name, state: m.stateStr}))"
+```
+
+Borrar el pod primario (por ejemplo si es mongodb-0).
+
+```bash
+kubectl delete pod mongodb-0 -n capishop
+```
+
+Volver a ver el estado desde otro nodo. Debe haber un nuevo PRIMARY entre los que
+quedaron.
+
+```bash
+kubectl exec -it mongodb-1 -n capishop -- mongosh --eval "rs.status().members.map(m => ({name: m.name, state: m.stateStr}))"
+```
+
+### DEMO 3 — NetworkPolicy: pod intruso
+
+Levantar un pod que no es parte de la app e intentar llegar a Mongo. Con las
+policies y Calico aplicando, la conexión no debe completarse.
+
+```bash
+kubectl run test-rogue --image=busybox -n capishop --rm -it -- sh
+```
+
+Dentro del pod, intentar alcanzar Mongo. Debe quedarse colgado o fallar, no
+conectar.
+
+```bash
+wget -qO- mongodb:27017
+```
+
+### DEMO 4 — TLS real
+
+Entrar desde el navegador a `https://capishop.local:31857` y mostrar el candado.
+El certificado es el autofirmado que emitió cert-manager, guardado en el secret
+`capishop-tls`. Antes hay que tener `capishop.local` mapeado a 192.168.224.135 en
+la máquina cliente.
+
+### DEMO 5 — Actualización en vivo
+
+Hacer un commit a la rama `develop`, ver que Tekton construye las imágenes y que
+ArgoCD las despliega solo.
+
+Lanzar el pipeline tras el commit (igual que en el PASO 10).
+
+```bash
+sed 's/capishop-run-[0-9]*/capishop-run-N/' ~/capishop-k8s/k8s/cicd/pipelinerun.yaml | kubectl apply -f -
+```
+
+Seguir el build.
+
+```bash
+tkn pipelinerun logs capishop-run-N -f -n tekton-pipelines
+```
+
+Ver que ArgoCD sincroniza el cambio. Debe volver a Synced tras el push de la
+imagen.
+
+```bash
+kubectl get application -n argocd
+```
+
+### DEMO 6 — Canary Release
+
+Disparar la actualización canary y verla avanzar 10%, 50%, 100%.
+
+Dejar la vista del rollout abierta.
+
+```bash
+kubectl argo rollouts get rollout capishop-backend-rollout -n capishop --watch
+```
+
+En otra terminal, lanzar la nueva imagen.
+
+```bash
+kubectl argo rollouts set image capishop-backend-rollout backend=isabelkitty/capishop-backend:latest -n capishop
+```
+
+### DEMO 7 — Observabilidad
+
+Generar tráfico contra la API y verlo en Grafana y Loki.
+
+Generar varias peticiones al backend.
+
+```bash
+for i in $(seq 1 20); do curl -s http://192.168.224.135:30081/api/productos > /dev/null; done
+```
+
+Luego, en Grafana, ver las métricas de Prometheus del PASO 8 y, en la fuente de
+Loki, esta query para los logs de la app.
+
+```logql
+{namespace="capishop"} |= "stock bajo"
+```
+
+### DEMO 8 — Alerta Slack
+
+Hacer un pedido que deje el stock de un producto en 5 o menos y ver la
+notificación en el canal #alertas.
+
+Primero buscar un producto con poco stock para que la compra cruce el umbral, o
+comprar varias veces el mismo. Procesar el pedido contra el backend (con un
+`productoId` real del catálogo).
+
+```bash
+curl -X POST http://192.168.224.135:30081/api/checkout \
+  -H "Content-Type: application/json" \
+  -d '{"sessionId":"demo-slack","productos":[{"productoId":"<ID_DE_UN_PRODUCTO>","cantidad":1,"talla":""}]}'
+```
+
+Confirmar en los logs del backend que disparó la alerta. Debe aparecer la línea
+con `stock bajo`.
+
+```bash
+kubectl logs -l app=capishop-backend -n capishop --tail=30 | grep "stock bajo"
+```
+
+> Aviso para esta demo: en `app/backend/src/routes/checkout.js` la función que
+> manda la alerta arma la URL con la variable `SLACK_WEBHOOK`, que no está
+> declarada (la declarada es `webhookUrl`, leída de `SLACK_WEBHOOK_URL`). Tal como
+> está el código, ese punto lanzaría un error al intentar enviar a Slack. El log
+> de "stock bajo" sí sale; el envío a Slack hay que revisarlo antes de la defensa.
+
+## Respaldo y restauración de MongoDB
+
+Si la base se ensucia o hay que volver al catálogo original, se reinicia el job de
+seed. Como `seed.js` borra los productos viejos antes de insertar, deja la base
+como al principio.
+
+Borrar el job de seed anterior.
+
+```bash
+kubectl delete job capishop-seed -n capishop --force --grace-period=0
+sleep 10
+kubectl get job capishop-seed -n capishop
+```
+
+Volver a crear el job para que corra el seed de nuevo. (Como `seed-job.yaml` está
+en `k8s/app` y ArgoCD sincroniza esa carpeta con selfHeal, también puede
+recrearlo solo; este apply es la forma manual.)
+
+```bash
+kubectl apply -f k8s/app/seed-job.yaml
+```
+
+Ver que terminó. Debe quedar Complete.
+
+```bash
+kubectl get job capishop-seed -n capishop
+```
+
+## Troubleshooting
+
+Errores comunes y cómo revisarlos.
+
+Pods que no arrancan o se reinician. Ver el estado y el detalle de un pod para
+leer los eventos al final.
+
+```bash
+kubectl get pods -n capishop
+kubectl describe pod <NOMBRE_DEL_POD> -n capishop
+```
+
+Backend que no conecta a Mongo. Revisar sus logs; si el replica set no está
+iniciado, el backend reintenta cada 5 segundos.
+
+```bash
+kubectl logs -l app=capishop-backend -n capishop --tail=30
+```
+
+PVC que no enlaza. Revisar el estado del PVC; debe estar Bound. Si está Pending,
+suele ser la StorageClass o el NFS.
+
+```bash
+kubectl get pvc -n capishop
+```
+
+Certificado de TLS que no se emite. Revisar el certificate y el ClusterIssuer.
+
+```bash
+kubectl get certificate -n capishop
+kubectl describe certificate capishop-tls -n capishop
+```
+
+Ingress que no responde. Ver el Ingress y los pods del controlador.
+
+```bash
+kubectl get ingress -n capishop
+kubectl get pods -n ingress-nginx
+```
+
+Pipeline de Tekton que falla. Listar los runs y leer los logs del que falló.
+
+```bash
+tkn pipelinerun list -n tekton-pipelines
+tkn pipelinerun logs <NOMBRE_DEL_RUN> -n tekton-pipelines
+```
+
+ArgoCD que no sincroniza. Ver el estado de la Application y su detalle.
+
+```bash
+kubectl get application -n argocd
+kubectl describe application capishop -n argocd
+```
+
+### Recuperación tras reinicio de las VMs
+
+Cuando se reinician las máquinas, a veces el ingress y el DNS interno quedan
+raros. Reiniciarlos los deja en orden.
+
+Reiniciar el controlador de ingress.
+
+```bash
+kubectl rollout restart deployment/ingress-nginx-controller -n ingress-nginx
+```
+
+Reiniciar CoreDNS.
+
+```bash
+kubectl rollout restart deployment/coredns -n kube-system
+```
