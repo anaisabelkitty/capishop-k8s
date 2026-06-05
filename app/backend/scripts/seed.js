@@ -86,7 +86,7 @@ const productos = [
     tallas: ['XS', 'S', 'M', 'L'],
     stockPorTalla: { XS: 8, S: 12, M: 15, L: 7 },
     colores: ['café'],
-    imagenes: ['ropa-perro-1.png', 'ropa-perro-2.png'],
+    imagenes: ['ropa-perro-1.png'],
     stock: 42
   },
   {
@@ -98,7 +98,7 @@ const productos = [
     tallas: ['XS', 'S', 'M'],
     stockPorTalla: { XS: 10, S: 14, M: 8 },
     colores: ['lila'],
-    imagenes: ['ropa-perro-2.png', 'ropa-perro-1.png'],
+    imagenes: ['ropa-perro-2.png'],
     stock: 32
   },
   {
@@ -279,7 +279,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['rosa'],
-    imagenes: ['juguete-gato-1.png', 'juguete-gato-2.png'],
+    imagenes: ['juguete-gato-1.png'],
     stock: 20
   },
   {
@@ -291,7 +291,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['azul'],
-    imagenes: ['juguete-gato-2.png', 'juguete-gato-1.png'],
+    imagenes: ['juguete-gato-2.png'],
     stock: 15
   },
   {
@@ -367,6 +367,18 @@ const productos = [
     stock: 8
   },
   {
+    nombre: 'Casita Tipi para Gato',
+    descripcion: 'Casita tipi mostaza con estructura de madera, pompones blancos y cojín interior.',
+    precio: 699,
+    coleccion: 'gatos',
+    categoria: 'cama',
+    tallas: [],
+    stockPorTalla: {},
+    colores: ['mostaza'],
+    imagenes: ['cama-gato-1.png'],
+    stock: 6
+  },
+  {
     nombre: 'Transportadora Café para Gato',
     descripcion: 'Transportadora rígida color salmón con puerta de rejilla metálica.',
     precio: 549,
@@ -390,18 +402,6 @@ const productos = [
     imagenes: ['transportadora-gato-1.png'],
     stock: 8
   },
-  {
-    nombre: 'Mochila Burbuja para Gato',
-    descripcion: 'Mochila negra con ventana circular transparente en el frente.',
-    precio: 799,
-    coleccion: 'gatos',
-    categoria: 'transportadora',
-    tallas: [],
-    stockPorTalla: {},
-    colores: ['negro'],
-    imagenes: ['transportadora-gato-2.png'],
-    stock: 8
-  },
   // ==================== ROEDORES ====================
   {
     nombre: 'Jaula Blanca para Hámster',
@@ -412,7 +412,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['blanco', 'naranja'],
-    imagenes: ['jaula-hamster-1.png', 'jaula-hamster-2.png'],
+    imagenes: ['jaula-hamster-1.png'],
     stock: 10
   },
   {
@@ -424,7 +424,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['transparente'],
-    imagenes: ['jaula-hamster-2.png', 'jaula-hamster-1.png'],
+    imagenes: ['jaula-hamster-2.png'],
     stock: 8
   },
   {
@@ -436,7 +436,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['naranja'],
-    imagenes: ['rueda-hamster-1.png', 'rueda-hamster-2.png'],
+    imagenes: ['rueda-hamster-1.png'],
     stock: 20
   },
   {
@@ -448,7 +448,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['lila'],
-    imagenes: ['rueda-hamster-2.png', 'rueda-hamster-1.png'],
+    imagenes: ['rueda-hamster-2.png'],
     stock: 15
   },
   {
@@ -485,7 +485,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['dorado'],
-    imagenes: ['jaula-pajaro-1.png', 'jaula-pajaro-2.png'],
+    imagenes: ['jaula-pajaro-1.png'],
     stock: 6
   },
   {
@@ -497,7 +497,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['plateado'],
-    imagenes: ['jaula-pajaro-2.png', 'jaula-pajaro-1.png'],
+    imagenes: ['jaula-pajaro-2.png'],
     stock: 8
   },
   {
@@ -509,7 +509,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['multicolor'],
-    imagenes: ['juguete-pajaro-1.png', 'juguete-pajaro-2.png'],
+    imagenes: ['juguete-pajaro-1.png'],
     stock: 20
   },
   {
@@ -521,7 +521,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['multicolor'],
-    imagenes: ['juguete-pajaro-2.png', 'juguete-pajaro-1.png'],
+    imagenes: ['juguete-pajaro-2.png'],
     stock: 18
   },
   {
@@ -558,7 +558,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['transparente'],
-    imagenes: ['pecera-1.png', 'pecera-2.png'],
+    imagenes: ['pecera-1.png'],
     stock: 5
   },
   {
@@ -570,7 +570,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['transparente', 'negro'],
-    imagenes: ['pecera-2.png', 'pecera-1.png'],
+    imagenes: ['pecera-2.png'],
     stock: 4
   },
   {
@@ -582,7 +582,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['lila', 'verde'],
-    imagenes: ['deco-pecera-1.png', 'deco-pecera-2.png'],
+    imagenes: ['deco-pecera-1.png'],
     stock: 15
   },
   {
@@ -594,7 +594,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['naranja'],
-    imagenes: ['deco-pecera-2.png', 'deco-pecera-1.png'],
+    imagenes: ['deco-pecera-2.png'],
     stock: 12
   },
   {
@@ -631,7 +631,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['transparente'],
-    imagenes: ['terrario-1.png', 'terrario-2.png'],
+    imagenes: ['terrario-1.png'],
     stock: 4
   },
   {
@@ -643,7 +643,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['madera oscura'],
-    imagenes: ['terrario-2.png', 'terrario-1.png'],
+    imagenes: ['terrario-2.png'],
     stock: 3
   },
   {
@@ -655,7 +655,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['naranja'],
-    imagenes: ['tazon-reptil-1.png', 'tazon-reptil-2.png'],
+    imagenes: ['tazon-reptil-1.png'],
     stock: 20
   },
   {
@@ -667,7 +667,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['negro'],
-    imagenes: ['tazon-reptil-2.png', 'tazon-reptil-1.png'],
+    imagenes: ['tazon-reptil-2.png'],
     stock: 15
   },
   {
@@ -679,7 +679,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['azul cielo'],
-    imagenes: ['jaula-huron-1.png', 'jaula-huron-2.png'],
+    imagenes: ['jaula-huron-1.png'],
     stock: 10
   },
   {
@@ -691,7 +691,7 @@ const productos = [
     tallas: [],
     stockPorTalla: {},
     colores: ['lila'],
-    imagenes: ['jaula-huron-2.png', 'jaula-huron-1.png'],
+    imagenes: ['jaula-huron-2.png'],
     stock: 10
   }
 ];
