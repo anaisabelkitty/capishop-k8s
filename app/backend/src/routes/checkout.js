@@ -13,7 +13,8 @@ const pedidoSchema = new mongoose.Schema({
   productos: [
     {
       producto: { type: mongoose.Schema.Types.ObjectId, ref: 'Producto' },
-      cantidad: { type: Number, required: true }
+      cantidad: { type: Number, required: true },
+      talla: { type: String, default: '' }
     }
   ],
   total: { type: Number, required: true },
@@ -55,8 +56,27 @@ router.post('/', async (req, res) => {
         });
       }
 
-      // Descuenta el stock
+      // Verifica stock por talla si aplica
+      if (item.talla && producto.stockPorTalla) {
+        const stockTalla = producto.stockPorTalla.get(item.talla) || 0;
+        if (stockTalla < item.cantidad) {
+          await session.abortTransaction();
+          return res.status(400).json({
+            error: `Stock insuficiente para: ${producto.nombre} en talla ${item.talla}`,
+            stockDisponible: stockTalla
+          });
+        }
+      }
+
+      // Descuenta el stock total
       producto.stock -= item.cantidad;
+
+      // Descuenta stockPorTalla si tiene talla
+      if (item.talla && producto.stockPorTalla) {
+        const stockTalla = producto.stockPorTalla.get(item.talla) || 0;
+        producto.stockPorTalla.set(item.talla, stockTalla - item.cantidad);
+      }
+
       if (producto.stock === 0) producto.disponible = false;
       await producto.save({ session });
 
@@ -68,7 +88,8 @@ router.post('/', async (req, res) => {
       sessionId,
       productos: productos.map(item => ({
         producto: item.productoId,
-        cantidad: item.cantidad
+        cantidad: item.cantidad,
+        talla: item.talla || ''
       })),
       total,
       estado: 'confirmado'

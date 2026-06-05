@@ -124,7 +124,8 @@ const confirmarPedido = async () => {
 
     await procesarCheckout(sessionId, carrito.value.map(item => ({
       productoId: item.productoId,
-      cantidad: item.cantidad
+      cantidad: item.cantidad,
+      talla: item.talla || ''
     })))
     exito.value = true
     carrito.value = []
