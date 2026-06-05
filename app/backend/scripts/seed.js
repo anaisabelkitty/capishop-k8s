@@ -367,28 +367,28 @@ const productos = [
     stock: 8
   },
   {
-    nombre: 'Casita Tipi para Gato',
-    descripcion: 'Casita tipi mostaza con estructura de madera, pompones blancos y cojín interior.',
-    precio: 699,
-    coleccion: 'gatos',
-    categoria: 'cama',
-    tallas: [],
-    stockPorTalla: {},
-    colores: ['mostaza'],
-    imagenes: ['cama-gato-1.png'],
-    stock: 6
-  },
-  {
     nombre: 'Transportadora Café para Gato',
-    descripcion: 'Transportadora rígida café con puerta de rejilla metálica.',
+    descripcion: 'Transportadora rígida color salmón con puerta de rejilla metálica.',
     precio: 549,
     coleccion: 'gatos',
     categoria: 'transportadora',
     tallas: [],
     stockPorTalla: {},
-    colores: ['café'],
-    imagenes: ['transportadora-gato-1.png'],
+    colores: ['salmón'],
+    imagenes: ['transportadora-gato-2.png'],
     stock: 10
+  },
+  {
+    nombre: 'Mochila Burbuja para Gato',
+    descripcion: 'Mochila negra con ventana circular transparente en el frente.',
+    precio: 799,
+    coleccion: 'gatos',
+    categoria: 'transportadora',
+    tallas: [],
+    stockPorTalla: {},
+    colores: ['negro'],
+    imagenes: ['transportadora-gato-1.png'],
+    stock: 8
   },
   {
     nombre: 'Mochila Burbuja para Gato',

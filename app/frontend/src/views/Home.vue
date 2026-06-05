@@ -55,12 +55,12 @@ const productosDestacados = ref([])
 const cargando = ref(true)
 
 const colecciones = [
-  { nombre: 'perros', emoji: '🐶', label: 'Perros', color: '#FFF0D6' },
-  { nombre: 'gatos', emoji: '🐱', label: 'Gatos', color: '#FFE4F0' },
-  { nombre: 'roedores', emoji: '🐹', label: 'Roedores', color: '#FFF3CD' },
-  { nombre: 'aves', emoji: '🐦', label: 'Aves', color: '#E8F4FD' },
-  { nombre: 'acuaticos', emoji: '🐠', label: 'Acuáticos', color: '#D6F0FF' },
-  { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos', color: '#E8FFE8' }
+  { nombre: 'perros', emoji: '🐶', label: 'Perros', color: '#F5E6D3' },
+  { nombre: 'gatos', emoji: '🐱', label: 'Gatos', color: '#EAEAEA' },
+  { nombre: 'roedores', emoji: '🐹', label: 'Roedores', color: '#FFE0C2' },
+  { nombre: 'aves', emoji: '🐦', label: 'Aves', color: '#FFD6E8' },
+  { nombre: 'acuaticos', emoji: '🐠', label: 'Acuáticos', color: '#D6EEFF' },
+  { nombre: 'exoticos', emoji: '🦎', label: 'Exóticos', color: '#D6F5D6' }
 ]
 
 onMounted(async () => {
@@ -107,7 +107,8 @@ const irAColeccion = (coleccion) => {
 }
 
 .banner p {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
   margin-bottom: 25px;
   opacity: 0.9;
 }
@@ -134,7 +135,7 @@ const irAColeccion = (coleccion) => {
 }
 
 .banner-imagen img {
-  height: 200px;
+  height: 230px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
 }

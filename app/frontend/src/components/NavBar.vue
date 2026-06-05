@@ -4,7 +4,7 @@
     <div class="navbar-contenido">
       <router-link to="/" class="logo">
         <img src="/images/logo-capishop.png" alt="CapiShop" class="logo-img" />
-        <span>CapiShop</span>
+        <span><span class="logo-capi">Capi</span><span class="logo-shop">Shop</span></span>
       </router-link>
       <div class="nav-links">
         <router-link to="/">Inicio</router-link>
@@ -48,8 +48,15 @@
   gap: 10px;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #7c3aed;
   text-decoration: none;
+}
+
+.logo-capi {
+  color: #222;
+}
+
+.logo-shop {
+  color: #7c3aed;
 }
 
 .logo-img {
@@ -85,14 +92,14 @@
 }
 
 .checkout-link {
-  background-color: #7c3aed;
-  color: white !important;
+  background-color: #ede9fe;
+  color: #7c3aed !important;
   padding: 8px 16px;
   border-radius: 20px;
 }
 
 .checkout-link:hover {
-  background-color: #6d28d9 !important;
-  color: white !important;
+  background-color: #ddd6fe !important;
+  color: #7c3aed !important;
 }
 </style>
