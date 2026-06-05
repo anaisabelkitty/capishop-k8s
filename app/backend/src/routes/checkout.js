@@ -68,18 +68,16 @@ router.post('/', async (req, res) => {
         }
       }
 
-      // Descuenta el stock total
-      producto.stock -= item.cantidad;
-
-      // Descuenta stockPorTalla si tiene talla
+      // Descuenta el stock total y stockPorTalla atómicamente
+      const updateQuery = { $inc: { stock: -item.cantidad } };
       if (item.talla && producto.stockPorTalla) {
-        const stockTalla = producto.stockPorTalla.get(item.talla) || 0;
-        producto.stockPorTalla.set(item.talla, stockTalla - item.cantidad);
-        producto.markModified('stockPorTalla');
+        updateQuery.$inc[`stockPorTalla.${item.talla}`] = -item.cantidad;
+      }
+      if (producto.stock - item.cantidad === 0) {
+        updateQuery.$set = { disponible: false };
       }
 
-      if (producto.stock === 0) producto.disponible = false;
-      await producto.save({ session });
+      await Producto.findByIdAndUpdate(item.productoId, updateQuery, { session });
 
       total += producto.precio * item.cantidad;
     }
