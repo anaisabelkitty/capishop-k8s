@@ -4,8 +4,29 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const https = require('https');
 const router = express.Router();
 const { Producto } = require('./productos');
+
+// Webhook de Slack para alertas
+const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+const enviarAlertaSlack = (mensaje) => {
+  const payload = JSON.stringify({ text: mensaje });
+  const url = new URL(SLACK_WEBHOOK);
+  const options = {
+    hostname: url.hostname,
+    path: url.pathname,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(payload)
+    }
+  };
+  const req = https.request(options);
+  req.write(payload);
+  req.end();
+};
 
 // Modelo de pedido en MongoDB
 const pedidoSchema = new mongoose.Schema({
@@ -37,7 +58,6 @@ router.post('/', async (req, res) => {
     const { sessionId, productos } = req.body;
     let total = 0;
 
-    // Verifica stock de cada producto antes de procesar
     for (const item of productos) {
       const producto = await Producto.findById(item.productoId).session(session);
 
@@ -56,7 +76,6 @@ router.post('/', async (req, res) => {
         });
       }
 
-      // Verifica stock por talla si aplica
       if (item.talla && producto.tallas && producto.tallas.length > 0) {
         const stockTalla = (producto.stockPorTalla && producto.stockPorTalla[item.talla]) || 0;
         if (stockTalla < item.cantidad) {
@@ -68,7 +87,6 @@ router.post('/', async (req, res) => {
         }
       }
 
-      // Descuenta el stock total y stockPorTalla atómicamente
       const updateQuery = { $inc: { stock: -item.cantidad } };
       if (item.talla && producto.tallas && producto.tallas.length > 0) {
         updateQuery.$inc[`stockPorTalla.${item.talla}`] = -item.cantidad;
@@ -82,15 +100,25 @@ router.post('/', async (req, res) => {
         updateQuery,
         { session }
       );
-      // Alerta de stock bajo — capturada por Loki
+
+      // Alerta de stock bajo — capturada por Loki y enviada a Slack
       const stockRestante = producto.stock - item.cantidad;
       if (stockRestante <= 5) {
-        console.log(JSON.stringify({ level: "warn", msg: "stock bajo", producto: producto.nombre, coleccion: producto.coleccion, categoria: producto.categoria, stock: stockRestante, umbral: 5 }));
+        console.log(JSON.stringify({
+          level: "warn",
+          msg: "stock bajo",
+          producto: producto.nombre,
+          coleccion: producto.coleccion,
+          categoria: producto.categoria,
+          stock: stockRestante,
+          umbral: 5
+        }));
+        enviarAlertaSlack(`🚨 *Stock bajo en CapiShop*\n*Producto:* ${producto.nombre}\n*Colección:* ${producto.coleccion}\n*Stock restante:* ${stockRestante} unidades\n*Umbral:* 5 unidades`);
       }
+
       total += producto.precio * item.cantidad;
     }
 
-    // Crea el pedido
     const pedido = new Pedido({
       sessionId,
       productos: productos.map(item => ({
