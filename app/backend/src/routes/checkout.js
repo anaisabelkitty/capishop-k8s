@@ -82,7 +82,11 @@ router.post('/', async (req, res) => {
         updateQuery,
         { session }
       );
-
+      // Alerta de stock bajo — capturada por Loki
+      const stockRestante = producto.stock - item.cantidad;
+      if (stockRestante <= 5) {
+        console.log(JSON.stringify({ level: "warn", msg: "stock bajo", producto: producto.nombre, coleccion: producto.coleccion, categoria: producto.categoria, stock: stockRestante, umbral: 5 }));
+      }
       total += producto.precio * item.cantidad;
     }
 
