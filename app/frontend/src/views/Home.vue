@@ -135,7 +135,7 @@ const irAColeccion = (coleccion) => {
 }
 
 .banner-imagen img {
-  height: 270px;
+  height: 230px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
 }
