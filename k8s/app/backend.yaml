@@ -3,7 +3,6 @@
 # La URL de MongoDB viene como variable de entorno para no hardcodearla en el código
 #
 # VITE_API_URL no va aquí porque es del frontend, no del backend
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,6 +32,11 @@ spec:
               value: "3000"
             - name: MONGODB_URI
               value: "mongodb://mongodb-0.mongodb-headless.capishop.svc.cluster.local:27017,mongodb-1.mongodb-headless.capishop.svc.cluster.local:27017,mongodb-2.mongodb-headless.capishop.svc.cluster.local:27017/capishop?replicaSet=rs0"
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-secret
+                  key: SLACK_WEBHOOK_URL
           livenessProbe:
             httpGet:
               path: /health
@@ -52,7 +56,6 @@ spec:
             limits:
               cpu: "300m"
               memory: "256Mi"
-
 ---
 # Service para exponer el backend dentro del cluster
 # El frontend se conecta a este service por nombre DNS
